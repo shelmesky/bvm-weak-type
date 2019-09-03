@@ -2,20 +2,8 @@ package compiler
 
 import (
 	"bvm/parser"
+	"bvm/runtime"
 	"golang.org/x/exp/errors/fmt"
-)
-
-const (
-	NOP = iota
-	PUSH
-	INITVARS
-	GETVAR
-	SETVAR
-	ADD
-	SUB
-	MUL
-	DIV
-	ASSIGN
 )
 
 type BCode uint16
@@ -42,33 +30,33 @@ type Variable struct {
 
 // 编译环境
 type CompileEnv struct {
-	SymbolTable map[string]Variable
-	FuncTable   map[string]FuncInfo
-	Constants   []Const
-	Code        []BCode
+	VarTable       map[string]Variable // 变量表
+	FuncTable      map[string]FuncInfo // 函数表
+	ConstantsTable []Const             // 常量表
+	Code           []BCode             // 字节码
 }
 
 func (this *CompileEnv) AppendCode(codes ...BCode) {
 
 	if len(codes) > 0 {
 		switch codes[0] {
-		case PUSH:
+		case runtime.PUSH:
 			fmt.Printf("PUSH index:[%d]\n", codes[1])
-		case INITVARS:
+		case runtime.INITVARS:
 			fmt.Println("INITVARS")
-		case GETVAR:
+		case runtime.GETVAR:
 			fmt.Printf("GETVAR index:[%d]\n", codes[1])
-		case SETVAR:
+		case runtime.SETVAR:
 			fmt.Printf("SETVAR index:[%d]\n", codes[1])
-		case ADD:
+		case runtime.ADD:
 			fmt.Println("ADD")
-		case SUB:
+		case runtime.SUB:
 			fmt.Println("SUB")
-		case MUL:
+		case runtime.MUL:
 			fmt.Println("MUL")
-		case DIV:
+		case runtime.DIV:
 			fmt.Println("DIV")
-		case ASSIGN:
+		case runtime.ASSIGN:
 			fmt.Println("ASSIGN")
 		}
 	}
@@ -84,20 +72,20 @@ func (this *CompileEnv) InitVars(node *parser.Node, vars []parser.NVar) error {
 	}
 
 	for _, v := range vars {
-		if _, ok := this.SymbolTable[v.Name]; ok {
+		if _, ok := this.VarTable[v.Name]; ok {
 			return fmt.Errorf("variable %s already exists\n", v.Name)
 		}
 
-		idx := uint16(len(this.SymbolTable))
+		idx := uint16(len(this.VarTable))
 		symbol := Variable{
 			Index:    idx,
 			Name:     v.Name,
 			IsGlobal: false,
 		}
 
-		this.SymbolTable[v.Name] = symbol
+		this.VarTable[v.Name] = symbol
 
-		this.AppendCode(INITVARS)
+		this.AppendCode(runtime.INITVARS)
 
 	}
 
@@ -106,10 +94,10 @@ func (this *CompileEnv) InitVars(node *parser.Node, vars []parser.NVar) error {
 
 func Compile(root *parser.Node) (*CompileEnv, error) {
 	cmpl := CompileEnv{
-		SymbolTable: make(map[string]Variable),
-		FuncTable:   make(map[string]FuncInfo, 0),
-		Constants:   make([]Const, 0),
-		Code:        make([]BCode, 0),
+		VarTable:       make(map[string]Variable),
+		FuncTable:      make(map[string]FuncInfo, 0),
+		ConstantsTable: make([]Const, 0),
+		Code:           make([]BCode, 0),
 	}
 
 	err := nodeToCode(&cmpl, root)
@@ -179,15 +167,15 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 		// 处理操作符
 		switch nBinary.Oper {
 		case parser.ADD:
-			cmpl.AppendCode(ADD)
+			cmpl.AppendCode(runtime.ADD)
 		case parser.SUB:
-			cmpl.AppendCode(SUB)
+			cmpl.AppendCode(runtime.SUB)
 		case parser.MUL:
-			cmpl.AppendCode(MUL)
+			cmpl.AppendCode(runtime.MUL)
 		case parser.DIV:
-			cmpl.AppendCode(DIV)
+			cmpl.AppendCode(runtime.DIV)
 		case parser.ASSIGN:
-			cmpl.AppendCode(ASSIGN)
+			cmpl.AppendCode(runtime.ASSIGN)
 		}
 
 		// 变量声明: var a
@@ -202,20 +190,20 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 	// var a = 111 或 a = 111 中的变量a
 	case parser.TSetVar:
 		name := node.Value.(*parser.NVarValue).Name
-		if variable, ok = cmpl.SymbolTable[name]; !ok {
+		if variable, ok = cmpl.VarTable[name]; !ok {
 			return fmt.Errorf("unknow variable: %s\n", name)
 		}
 
-		cmpl.AppendCode(SETVAR, BCode(variable.Index))
+		cmpl.AppendCode(runtime.SETVAR, BCode(variable.Index))
 
 	// 表达式中出现的变量
 	case parser.TGetVar:
 		name := node.Value.(*parser.NVarValue).Name
-		if variable, ok = cmpl.SymbolTable[name]; !ok {
+		if variable, ok = cmpl.VarTable[name]; !ok {
 			return fmt.Errorf("unknow variable: %s\n", name)
 		}
 
-		cmpl.AppendCode(GETVAR, BCode(variable.Index))
+		cmpl.AppendCode(runtime.GETVAR, BCode(variable.Index))
 
 	// 字面值
 	case parser.TValue:
@@ -226,8 +214,8 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 				Value: node.Value,
 			}
 
-			cmpl.Constants = append(cmpl.Constants, cnst)
-			cmpl.AppendCode(PUSH, BCode(len(cmpl.Constants)-1))
+			cmpl.ConstantsTable = append(cmpl.ConstantsTable, cnst)
+			cmpl.AppendCode(runtime.PUSH, BCode(len(cmpl.ConstantsTable)-1))
 
 		case bool:
 			cnst := Const{
@@ -235,8 +223,8 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 				Value: node.Value,
 			}
 
-			cmpl.Constants = append(cmpl.Constants, cnst)
-			cmpl.AppendCode(PUSH, BCode(len(cmpl.Constants)-1))
+			cmpl.ConstantsTable = append(cmpl.ConstantsTable, cnst)
+			cmpl.AppendCode(runtime.PUSH, BCode(len(cmpl.ConstantsTable)-1))
 
 		case string:
 			cnst := Const{
@@ -244,8 +232,8 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 				Value: node.Value,
 			}
 
-			cmpl.Constants = append(cmpl.Constants, cnst)
-			cmpl.AppendCode(PUSH, BCode(len(cmpl.Constants)-1))
+			cmpl.ConstantsTable = append(cmpl.ConstantsTable, cnst)
+			cmpl.AppendCode(runtime.PUSH, BCode(len(cmpl.ConstantsTable)-1))
 
 		case float64:
 			cnst := Const{
@@ -253,8 +241,8 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 				Value: node.Value,
 			}
 
-			cmpl.Constants = append(cmpl.Constants, cnst)
-			cmpl.AppendCode(PUSH, BCode(len(cmpl.Constants)-1))
+			cmpl.ConstantsTable = append(cmpl.ConstantsTable, cnst)
+			cmpl.AppendCode(runtime.PUSH, BCode(len(cmpl.ConstantsTable)-1))
 		}
 	}
 
