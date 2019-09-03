@@ -49,6 +49,30 @@ type CompileEnv struct {
 }
 
 func (this *CompileEnv) AppendCode(codes ...BCode) {
+
+	if len(codes) > 0 {
+		switch codes[0] {
+		case PUSH:
+			fmt.Printf("PUSH index:[%d]\n", codes[1])
+		case INITVARS:
+			fmt.Println("INITVARS")
+		case GETVAR:
+			fmt.Printf("GETVAR index:[%d]\n", codes[1])
+		case SETVAR:
+			fmt.Printf("SETVAR index:[%d]\n", codes[1])
+		case ADD:
+			fmt.Println("ADD")
+		case SUB:
+			fmt.Println("SUB")
+		case MUL:
+			fmt.Println("MUL")
+		case DIV:
+			fmt.Println("DIV")
+		case ASSIGN:
+			fmt.Println("ASSIGN")
+		}
+	}
+
 	for _, code := range codes {
 		this.Code = append(this.Code, code)
 	}
@@ -83,9 +107,9 @@ func (this *CompileEnv) InitVars(node *parser.Node, vars []parser.NVar) error {
 func Compile(root *parser.Node) error {
 	cmpl := CompileEnv{
 		SymbolTable: make(map[string]Variable),
-		FuncTable:   make(map[string]FuncInfo, 32),
-		Constants:   make([]Const, 32),
-		Code:        make([]BCode, 32),
+		FuncTable:   make(map[string]FuncInfo, 0),
+		Constants:   make([]Const, 0),
+		Code:        make([]BCode, 0),
 	}
 
 	err := nodeToCode(&cmpl, root)
@@ -124,7 +148,7 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 
 	// 赋值语句和二元表达式
 	case parser.TBinary:
-		nBinary := node.Value.(parser.NBinary)
+		nBinary := node.Value.(*parser.NBinary)
 
 		// 递归处理左子树
 		if err = nodeToCode(cmpl, nBinary.Left); err != nil {
@@ -171,7 +195,7 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 	// 变量定义
 	case parser.TVars:
 
-		if err = cmpl.InitVars(node, node.Value.(parser.NVars).Vars); err != nil {
+		if err = cmpl.InitVars(node, node.Value.(*parser.NVars).Vars); err != nil {
 
 		}
 
@@ -182,8 +206,7 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			return fmt.Errorf("unknow variable: %s\n", name)
 		}
 
-		cmpl.AppendCode(SETVAR)
-		cmpl.AppendCode(BCode(variable.Index))
+		cmpl.AppendCode(SETVAR, BCode(variable.Index))
 
 	// 表达式中出现的变量
 	case parser.TGetVar:
@@ -193,6 +216,46 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 		}
 
 		cmpl.AppendCode(GETVAR, BCode(variable.Index))
+
+	// 字面值
+	case parser.TValue:
+		switch node.Value.(type) {
+		case int64:
+			cnst := Const{
+				Type:  parser.VInt,
+				Value: node.Value,
+			}
+
+			cmpl.Constants = append(cmpl.Constants, cnst)
+			cmpl.AppendCode(PUSH, BCode(len(cmpl.Constants)-1))
+
+		case bool:
+			cnst := Const{
+				Type:  parser.VBool,
+				Value: node.Value,
+			}
+
+			cmpl.Constants = append(cmpl.Constants, cnst)
+			cmpl.AppendCode(PUSH, BCode(len(cmpl.Constants)-1))
+
+		case string:
+			cnst := Const{
+				Type:  parser.VStr,
+				Value: node.Value,
+			}
+
+			cmpl.Constants = append(cmpl.Constants, cnst)
+			cmpl.AppendCode(PUSH, BCode(len(cmpl.Constants)-1))
+
+		case float64:
+			cnst := Const{
+				Type:  parser.VFloat,
+				Value: node.Value,
+			}
+
+			cmpl.Constants = append(cmpl.Constants, cnst)
+			cmpl.AppendCode(PUSH, BCode(len(cmpl.Constants)-1))
+		}
 	}
 
 	return nil
