@@ -3,7 +3,7 @@ package compiler
 import (
 	"bvm/parser"
 	"bvm/runtime"
-	"golang.org/x/exp/errors/fmt"
+	"fmt"
 )
 
 type BCode uint16
