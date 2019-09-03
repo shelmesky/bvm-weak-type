@@ -3,6 +3,7 @@ package main
 import (
 	"bvm/compiler"
 	"bvm/parser"
+	"bvm/vm"
 	"io/ioutil"
 	"log"
 	"os"
@@ -37,7 +38,17 @@ func main() {
 		panic(err)
 	}
 
-	err = compiler.Compile(root)
+	cmplResult, err := compiler.Compile(root)
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = vm.Run(cmplResult)
+
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Println(root)
 }

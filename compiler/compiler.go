@@ -104,7 +104,7 @@ func (this *CompileEnv) InitVars(node *parser.Node, vars []parser.NVar) error {
 	return nil
 }
 
-func Compile(root *parser.Node) error {
+func Compile(root *parser.Node) (*CompileEnv, error) {
 	cmpl := CompileEnv{
 		SymbolTable: make(map[string]Variable),
 		FuncTable:   make(map[string]FuncInfo, 0),
@@ -115,10 +115,10 @@ func Compile(root *parser.Node) error {
 	err := nodeToCode(&cmpl, root)
 
 	if err != nil {
-		return fmt.Errorf("compile failed:", err)
+		return &cmpl, fmt.Errorf("compile failed:", err)
 	}
 
-	return nil
+	return &cmpl, nil
 }
 
 func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
