@@ -70,7 +70,16 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 		case runtime.CALLFUNC:
 			fmt.Printf("Compile>  CALLFUNC offset:[%d]\n", codes[1])
 		case runtime.GETPARAMS:
-			fmt.Printf("Compile>  GETPARAMS count:[%d]\n", codes[1])
+			fmt.Printf("Compile>  GETPARAMS count:[%d] ", codes[1])
+			varIdxList := codes[2:]
+			if len(varIdxList) > 0 {
+				fmt.Printf("varIdxList:[ ")
+				for i := 0; i < len(varIdxList); i++ {
+					fmt.Printf("%d ", varIdxList[i])
+				}
+				fmt.Printf("]")
+			}
+			fmt.Printf("\n")
 		}
 	}
 
@@ -79,14 +88,15 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 	}
 }
 
-func (this *CompileEnv) InitVars(node *parser.Node, vars []parser.NVar) error {
+func (this *CompileEnv) InitVars(node *parser.Node, vars []parser.NVar) ([]BCode, error) {
+	var varIdxList []BCode
 	if len(vars) == 0 {
-		return fmt.Errorf("empty vars")
+		return varIdxList, fmt.Errorf("empty vars")
 	}
 
 	for _, v := range vars {
 		if _, ok := this.VarTable[v.Name]; ok {
-			return fmt.Errorf("variable %s already exists\n", v.Name)
+			return varIdxList, fmt.Errorf("variable %s already exists\n", v.Name)
 		}
 
 		idx := uint16(len(this.VarTable))
@@ -96,13 +106,14 @@ func (this *CompileEnv) InitVars(node *parser.Node, vars []parser.NVar) error {
 			IsGlobal: false,
 		}
 
+		varIdxList = append(varIdxList, BCode(idx))
+
 		this.VarTable[v.Name] = symbol
 
 		this.AppendCode(runtime.INITVARS)
-
 	}
 
-	return nil
+	return varIdxList, nil
 }
 
 func Compile(root *parser.Node) (*CompileEnv, error) {
@@ -193,9 +204,8 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 
 	// 变量定义
 	case parser.TVars:
-
-		if err = cmpl.InitVars(node, node.Value.(*parser.NVars).Vars); err != nil {
-
+		if _, err = cmpl.InitVars(node, node.Value.(*parser.NVars).Vars); err != nil {
+			return err
 		}
 
 	// var a = 111 或 a = 111 中的变量a
@@ -290,7 +300,8 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			return fmt.Errorf("Function %s hasn't been defined\n", nFunc.Name)
 		}
 
-		if err = cmpl.InitVars(node, nFunc.Params); err != nil {
+		var varIdxList []BCode
+		if varIdxList, err = cmpl.InitVars(node, nFunc.Params); err != nil {
 			return err
 		}
 
@@ -302,7 +313,11 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 		cmpl.InFunc = true
 
 		if len(nFunc.Params) > 0 {
-			cmpl.AppendCode(runtime.GETPARAMS, BCode(len(nFunc.Params)))
+			var getParamIns []BCode
+			getParamIns = append(getParamIns, runtime.GETPARAMS)
+			getParamIns = append(getParamIns, BCode(len(nFunc.Params)))
+			getParamIns = append(getParamIns, varIdxList...)
+			cmpl.AppendCode(getParamIns...)
 		}
 
 		// 编译函数体
@@ -360,7 +375,8 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			}
 		}
 
-		cmpl.AppendCode(runtime.CALLFUNC, BCode(fInfo.Offset))
+		offset := fInfo.Offset - int64(len(cmpl.Code))
+		cmpl.AppendCode(runtime.CALLFUNC, BCode(offset))
 	}
 
 	return nil

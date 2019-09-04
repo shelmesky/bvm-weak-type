@@ -53,10 +53,10 @@ func Run(cmpl *compiler.CompileEnv) error {
 
 	code := cmpl.Code
 	length := len(code)
+	var i int
 
-	for i := 0; i < length; i++ {
-		ins := code[i]
-		switch ins {
+	for i < length {
+		switch code[i] {
 		case runtime.INITVARS:
 			variable := Value{
 				Type: VAR_IDX,
@@ -101,7 +101,7 @@ func Run(cmpl *compiler.CompileEnv) error {
 		case runtime.GETVAR:
 			i++
 			vm.ESP++
-			varIndex := code[i]
+			varIndex := int64(code[i])
 			stackItem := StackItem{
 				Type:  VAR_IDX,
 				Value: varIndex,
@@ -126,6 +126,14 @@ func Run(cmpl *compiler.CompileEnv) error {
 			}
 			if stackItemB.Type == STACK_TEMP {
 				valueB = stackItemB.Value.(*Value)
+			}
+
+			if stackItemA.Type == VAR_IDX {
+				valueA = vm.Vars[stackItemA.Value.(int64)]
+			}
+
+			if stackItemB.Type == VAR_IDX {
+				valueB = vm.Vars[stackItemB.Value.(int64)]
 			}
 
 			if valueA.Type == parser.VInt && valueB.Type == parser.VInt {
@@ -204,19 +212,35 @@ func Run(cmpl *compiler.CompileEnv) error {
 			i += dest
 
 		case runtime.CALLFUNC:
-			calls[coff] = int64(i) + 2 // 在coff处将当前指令后的2条指令指针保存
-			coff += 1                  // coff变量+2
-			i += int(int16(code[i+1]))
+			calls[coff] = int64(i) + 2      // 在coff处将当前指令后的2条指令指针保存
+			coff += 1                       // coff变量+1
+			offset := int(int16(code[i+1])) // 跳转到目标函数
+			i += offset
+			continue
+
+		case runtime.RETFUNC:
 
 		case runtime.GETPARAMS:
 			i++
 			paramCount := code[i]
-			for j := 0; j < int(paramCount)-1; j++ {
-				paramValue := vm.Stack[vm.ESP-j]
-				fmt.Println(paramValue)
+			var paramValue *Value
+			for j := 0; j <= int(paramCount)-1; j++ {
+				paramItem := vm.Stack[vm.ESP-j]
+				if paramItem.Type == CONST_IDX {
+					paramValue = vm.Constants[paramItem.Value.(int64)]
+				}
+				i++
+				argumentVarIdx := int64(code[i])
+				if paramValue != nil {
+					vm.Vars[argumentVarIdx] = paramValue
+				}
 			}
 
+		default:
+			return fmt.Errorf("unknown command %d\n", code[i])
+
 		}
+		i++
 	}
 
 	return nil
