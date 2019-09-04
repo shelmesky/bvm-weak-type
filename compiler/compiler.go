@@ -67,6 +67,8 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 			fmt.Println("RETFUNC")
 		case runtime.RETURN:
 			fmt.Println("RETURN")
+		case runtime.CALLFUNC:
+			fmt.Printf("CALLFUNC offset:[%d]\n", codes[1])
 		}
 	}
 
@@ -323,7 +325,23 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 		cmpl.FuncTable[nFunc.Name] = finfo
 
 	case parser.TCallFunc:
+		nFunc := node.Value.(*parser.NCallFunc)
 
+		// 编译实参
+		if nFunc.Params != nil {
+			for _, expr := range nFunc.Params.Value.(*parser.NParams).Expr {
+				if err = nodeToCode(cmpl, expr); err != nil {
+					return err
+				}
+			}
+		}
+
+		var fInfo FuncInfo
+		if fInfo, ok = cmpl.FuncTable[nFunc.Name]; !ok {
+			return fmt.Errorf("Function %s hasn't been defined\n", nFunc.Name)
+		}
+
+		cmpl.AppendCode(runtime.CALLFUNC, BCode(fInfo.Offset))
 	}
 
 	return nil

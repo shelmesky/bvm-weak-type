@@ -12,6 +12,7 @@ const (
 	DIV    // /
 	ASSIGN // =
 	JMP
-	RETFUNC // return from function
-	RETURN  // return from contract
+	RETFUNC  // return from function
+	RETURN   // return from contract
+	CALLFUNC // call function
 )

@@ -3,5 +3,5 @@ contract mycnt {
         return a+b+c
     }
 
-    var x = myfunc(1,2,3)
+    var x = myfunc(1,2)
 }
