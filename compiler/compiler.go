@@ -187,8 +187,6 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			cmpl.AppendCode(runtime.ASSIGN)
 		}
 
-		// 变量声明: var a
-
 	// 变量定义
 	case parser.TVars:
 
