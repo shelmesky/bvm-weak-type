@@ -225,17 +225,17 @@ func Run(cmpl *compiler.CompileEnv) error {
 
 		case runtime.GETPARAMS:
 			i++
-			paramCount := code[i]
-			var paramValue *Value
+			paramCount := code[i] // 参数数量
+			var paramValue *Value // 实参
 			for j := 0; j <= int(paramCount)-1; j++ {
-				paramItem := vm.Stack[vm.ESP-j]
+				paramItem := vm.Stack[vm.ESP-j] // 实参在stack中的元素
 				if paramItem.Type == CONST_IDX {
-					paramValue = vm.Constants[paramItem.Value.(int64)]
+					paramValue = vm.Constants[paramItem.Value.(int64)] // 获取真正的实参
 				}
 				i++
-				argumentVarIdx := int64(code[i])
+				argumentVarIdx := int64(code[i]) // 形参在VM变量内存中的索引
 				if paramValue != nil {
-					vm.Vars[argumentVarIdx] = paramValue
+					vm.Vars[argumentVarIdx] = paramValue // 将实参赋值给形参
 				}
 			}
 
