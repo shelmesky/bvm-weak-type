@@ -290,16 +290,16 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			return fmt.Errorf("Function %s hasn't been defined\n", nFunc.Name)
 		}
 
+		if err = cmpl.InitVars(node, nFunc.Params); err != nil {
+			return err
+		}
+
 		start := int64(len(cmpl.Code))
 		cmpl.AppendCode(runtime.JMP, 0)
 		finfo.Offset = start + 2
 
 		// 正在编译函数
 		cmpl.InFunc = true
-
-		if err = cmpl.InitVars(node, nFunc.Params); err != nil {
-			return err
-		}
 
 		if len(nFunc.Params) > 0 {
 			cmpl.AppendCode(runtime.GETPARAMS, BCode(len(nFunc.Params)))
@@ -324,7 +324,7 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 		}
 
 		// 跳出函数定义
-		funcEnd := int64(len(cmpl.Code)) - start
+		funcEnd := int64(len(cmpl.Code)) - 1 - start
 		cmpl.Code[start+1] = BCode(funcEnd)
 
 		// 在函数表中保存

@@ -4,6 +4,7 @@ import (
 	"bvm/compiler"
 	"bvm/parser"
 	"bvm/runtime"
+	"fmt"
 	"unsafe"
 )
 
@@ -39,6 +40,8 @@ func Run(cmpl *compiler.CompileEnv) error {
 		valueA *Value
 		valueB *Value
 	)
+	calls := make([]int64, 1000)
+	var coff int64
 
 	vm := VM{
 		Constants: make([]*Value, 0),
@@ -52,9 +55,12 @@ func Run(cmpl *compiler.CompileEnv) error {
 	length := len(code)
 
 	for i := 0; i < length; i++ {
-		switch code[i] {
+		ins := code[i]
+		switch ins {
 		case runtime.INITVARS:
-			variable := Value{}
+			variable := Value{
+				Type: VAR_IDX,
+			}
 			vm.Vars = append(vm.Vars, &variable)
 
 		case runtime.PUSH:
@@ -196,6 +202,19 @@ func Run(cmpl *compiler.CompileEnv) error {
 		case runtime.JMP:
 			dest := int(int16(code[i+1]))
 			i += dest
+
+		case runtime.CALLFUNC:
+			calls[coff] = int64(i) + 2 // 在coff处将当前指令后的2条指令指针保存
+			coff += 1                  // coff变量+2
+			i += int(int16(code[i+1]))
+
+		case runtime.GETPARAMS:
+			i++
+			paramCount := code[i]
+			for j := 0; j < int(paramCount)-1; j++ {
+				paramValue := vm.Stack[vm.ESP-j]
+				fmt.Println(paramValue)
+			}
 
 		}
 	}
