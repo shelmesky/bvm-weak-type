@@ -10,9 +10,11 @@ type BCode uint16
 
 // 函数信息
 type FuncInfo struct {
-	Offset       uint64
-	Name         string
-	ParamsLength int
+	Name        string // 函数名
+	Offset      int64  // 在指令流中的开始位置
+	ParamsNum   int    // 参数数量
+	LocalVarNum int    // 局部变量数量
+	HasReturn   bool   // 是否有返回值
 }
 
 // 常量
@@ -34,6 +36,7 @@ type CompileEnv struct {
 	FuncTable      map[string]FuncInfo // 函数表
 	ConstantsTable []Const             // 常量表
 	Code           []BCode             // 字节码
+	InFunc         bool                // 是否正在编译函数
 }
 
 func (this *CompileEnv) AppendCode(codes ...BCode) {
@@ -58,6 +61,12 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 			fmt.Println("DIV")
 		case runtime.ASSIGN:
 			fmt.Println("ASSIGN")
+		case runtime.JMP:
+			fmt.Printf("JMP [%d]\n", codes[1])
+		case runtime.RETFUNC:
+			fmt.Println("RETFUNC")
+		case runtime.RETURN:
+			fmt.Println("RETURN")
 		}
 	}
 
@@ -244,6 +253,79 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			cmpl.ConstantsTable = append(cmpl.ConstantsTable, cnst)
 			cmpl.AppendCode(runtime.PUSH, BCode(len(cmpl.ConstantsTable)-1))
 		}
+
+	// return语句
+	case parser.TReturn:
+		expr := node.Value.(*parser.NReturn).Expr
+
+		// 如果return语句有表达式
+		if expr != nil {
+			if err = nodeToCode(cmpl, expr); err != nil {
+				return err
+			}
+		}
+
+		if cmpl.InFunc {
+			cmpl.AppendCode(runtime.RETFUNC)
+		} else {
+			cmpl.AppendCode(runtime.RETURN)
+		}
+
+	case parser.TFunc:
+		nFunc := node.Value.(*parser.NFunc)
+
+		// 不允许嵌套函数定义
+		if cmpl.InFunc {
+			return fmt.Errorf("Function cannot be defined inside another function")
+		}
+
+		finfo := FuncInfo{
+			Name:      nFunc.Name,
+			ParamsNum: len(nFunc.Params),
+		}
+
+		if _, ok := cmpl.FuncTable[nFunc.Name]; ok {
+			return fmt.Errorf("Function %s hasn't been defined\n", nFunc.Name)
+		}
+
+		start := int64(len(cmpl.Code))
+		cmpl.AppendCode(runtime.JMP, 0)
+		finfo.Offset = start + 2
+
+		// 正在编译函数
+		cmpl.InFunc = true
+
+		if err = cmpl.InitVars(node, nFunc.Params); err != nil {
+			return err
+		}
+
+		// 编译函数体
+		varCount := len(cmpl.VarTable)
+		if err = nodeToCode(cmpl, nFunc.Body); err != nil {
+			return err
+		}
+
+		// 统计函数体局部变量的数量
+		localVarNum := len(cmpl.VarTable) - varCount
+		finfo.LocalVarNum = localVarNum
+
+		// 离开函数编译
+		cmpl.InFunc = false
+
+		// 如果函数最后没有return关键字, 则在指令流中插入RETFUNC
+		if cmpl.Code[len(cmpl.Code)-1] != runtime.RETFUNC {
+			cmpl.AppendCode(runtime.RETFUNC)
+		}
+
+		// 跳出函数定义
+		funcEnd := int64(len(cmpl.Code)) - start
+		cmpl.Code[start+1] = BCode(funcEnd)
+
+		// 在函数表中保存
+		cmpl.FuncTable[nFunc.Name] = finfo
+
+	case parser.TCallFunc:
+
 	}
 
 	return nil

@@ -6,9 +6,12 @@ const (
 	INITVARS
 	GETVAR
 	SETVAR
-	ADD
-	SUB
-	MUL
-	DIV
-	ASSIGN
+	ADD    // +
+	SUB    // -
+	MUL    // *
+	DIV    // /
+	ASSIGN // =
+	JMP
+	RETFUNC // return from function
+	RETURN  // return from contract
 )

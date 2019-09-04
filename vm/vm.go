@@ -193,6 +193,10 @@ func Run(cmpl *compiler.CompileEnv) error {
 					int64(uintptr(unsafe.Pointer(&value)))
 			}
 
+		case runtime.JMP:
+			dest := int(int16(code[i+1]))
+			i += dest
+
 		}
 	}
 

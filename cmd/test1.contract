@@ -1,3 +1,7 @@
 contract mycnt {
-    var a = 1+2*3
+    func myfunc(a, b, c) {
+        return a+b+c
+    }
+
+    var x = myfunc(1,2,3)
 }
