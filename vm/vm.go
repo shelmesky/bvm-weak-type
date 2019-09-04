@@ -52,8 +52,8 @@ func Run(cmpl *compiler.CompileEnv) error {
 	}
 
 	code := cmpl.Code
-	length := len(code)
-	var i int
+	length := int64(len(code))
+	var i int64
 
 	for i < length {
 		switch code[i] {
@@ -208,17 +208,20 @@ func Run(cmpl *compiler.CompileEnv) error {
 			}
 
 		case runtime.JMP:
-			dest := int(int16(code[i+1]))
+			dest := int64(int16(code[i+1]))
 			i += dest
 
 		case runtime.CALLFUNC:
-			calls[coff] = int64(i) + 2      // 在coff处将当前指令后的2条指令指针保存
-			coff += 1                       // coff变量+1
-			offset := int(int16(code[i+1])) // 跳转到目标函数
+			calls[coff] = int64(i) + 2        // 在coff处将当前指令后的2条指令指针保存
+			coff += 1                         // coff变量+1
+			offset := int64(int16(code[i+1])) // 跳转到目标函数
 			i += offset
 			continue
 
 		case runtime.RETFUNC:
+			coff -= 1
+			i = calls[coff] // 从函数返回，恢复指令指针
+			continue
 
 		case runtime.GETPARAMS:
 			i++
