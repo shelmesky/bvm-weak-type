@@ -35,19 +35,19 @@ func main() {
 
 	root, err := parser.Parser(contractBody)
 	if err != nil {
-		panic(err)
+		panic(err.Error())
 	}
 
 	cmplResult, err := compiler.Compile(root)
 
 	if err != nil {
-		panic(err)
+		panic(err.Error())
 	}
 
 	err = vm.Run(cmplResult)
 
 	if err != nil {
-		panic(err)
+		panic(err.Error())
 	}
 
 	fmt.Println(root)

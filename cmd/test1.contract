@@ -1,7 +1,7 @@
 contract mycnt {
-    func myfunc(a, b, c) {
-        return a+b+c
+    func myfunc(a,b) {
+        return a+b
     }
 
-    var x = myfunc(1,2)
+    var x = myfunc(111, 222)
 }

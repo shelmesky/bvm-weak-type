@@ -44,31 +44,33 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 	if len(codes) > 0 {
 		switch codes[0] {
 		case runtime.PUSH:
-			fmt.Printf("PUSH index:[%d]\n", codes[1])
+			fmt.Printf("Compile>  PUSH index:[%d]\n", codes[1])
 		case runtime.INITVARS:
-			fmt.Println("INITVARS")
+			fmt.Println("Compile>  INITVARS")
 		case runtime.GETVAR:
-			fmt.Printf("GETVAR index:[%d]\n", codes[1])
+			fmt.Printf("Compile>  GETVAR index:[%d]\n", codes[1])
 		case runtime.SETVAR:
-			fmt.Printf("SETVAR index:[%d]\n", codes[1])
+			fmt.Printf("Compile>  SETVAR index:[%d]\n", codes[1])
 		case runtime.ADD:
-			fmt.Println("ADD")
+			fmt.Println("Compile>  ADD")
 		case runtime.SUB:
-			fmt.Println("SUB")
+			fmt.Println("Compile>  UB")
 		case runtime.MUL:
-			fmt.Println("MUL")
+			fmt.Println("Compile>  MUL")
 		case runtime.DIV:
-			fmt.Println("DIV")
+			fmt.Println("Compile>  DIV")
 		case runtime.ASSIGN:
-			fmt.Println("ASSIGN")
+			fmt.Println("Compile>  ASSIGN")
 		case runtime.JMP:
-			fmt.Printf("JMP [%d]\n", codes[1])
+			fmt.Printf("Compile>  JMP [%d]\n", codes[1])
 		case runtime.RETFUNC:
-			fmt.Println("RETFUNC")
+			fmt.Println("Compile>  RETFUNC")
 		case runtime.RETURN:
-			fmt.Println("RETURN")
+			fmt.Println("Compile>  RETURN")
 		case runtime.CALLFUNC:
-			fmt.Printf("CALLFUNC offset:[%d]\n", codes[1])
+			fmt.Printf("Compile>  CALLFUNC offset:[%d]\n", codes[1])
+		case runtime.GETPARAMS:
+			fmt.Printf("Compile>  GETPARAMS count:[%d]\n", codes[1])
 		}
 	}
 
@@ -114,7 +116,7 @@ func Compile(root *parser.Node) (*CompileEnv, error) {
 	err := nodeToCode(&cmpl, root)
 
 	if err != nil {
-		return &cmpl, fmt.Errorf("compile failed:", err)
+		return &cmpl, fmt.Errorf("compile failed: %s\n", err.Error())
 	}
 
 	return &cmpl, nil
@@ -172,7 +174,7 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 
 		// 递归处理右子树
 		if err = nodeToCode(cmpl, nBinary.Right); err != nil {
-			return nil
+			return err
 		}
 
 		// 处理操作符
@@ -299,6 +301,10 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			return err
 		}
 
+		if len(nFunc.Params) > 0 {
+			cmpl.AppendCode(runtime.GETPARAMS, BCode(len(nFunc.Params)))
+		}
+
 		// 编译函数体
 		varCount := len(cmpl.VarTable)
 		if err = nodeToCode(cmpl, nFunc.Body); err != nil {
@@ -327,18 +333,31 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 	case parser.TCallFunc:
 		nFunc := node.Value.(*parser.NCallFunc)
 
+		var fInfo FuncInfo
+		if fInfo, ok = cmpl.FuncTable[nFunc.Name]; !ok {
+			return fmt.Errorf("Function %s hasn't been defined\n", nFunc.Name)
+		}
+
 		// 编译实参
 		if nFunc.Params != nil {
-			for _, expr := range nFunc.Params.Value.(*parser.NParams).Expr {
+			paramsList := nFunc.Params.Value.(*parser.NParams)
+			for _, expr := range paramsList.Expr {
 				if err = nodeToCode(cmpl, expr); err != nil {
 					return err
 				}
 			}
-		}
 
-		var fInfo FuncInfo
-		if fInfo, ok = cmpl.FuncTable[nFunc.Name]; !ok {
-			return fmt.Errorf("Function %s hasn't been defined\n", nFunc.Name)
+			// 如果提供的参数数量不等于实际函数的参数
+			if len(paramsList.Expr) != fInfo.ParamsNum {
+				return fmt.Errorf("Call function [%s] need %d arguments, got %d.\n",
+					nFunc.Name, fInfo.ParamsNum, len(paramsList.Expr))
+			}
+		} else {
+			// 如果调用时未提供参数, 但函数有参数则报错
+			if fInfo.ParamsNum > 0 {
+				return fmt.Errorf("Call function [%s] need %d arguments, got 0.\n",
+					nFunc.Name, fInfo.ParamsNum)
+			}
 		}
 
 		cmpl.AppendCode(runtime.CALLFUNC, BCode(fInfo.Offset))
