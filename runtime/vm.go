@@ -253,6 +253,7 @@ func Run(byteCodeStream []uint16, constantTable []Value) error {
 			}
 
 			// 如果被调用函数定义有返回值, 且返回了值
+			// 返回值已经保存在vm.Vars中, 返回的是索引
 			if embedFunc.HasReturn && len(result) > 0 {
 				ret := result[0].Interface()
 				retValue := ret.(int)
@@ -264,9 +265,10 @@ func Run(byteCodeStream []uint16, constantTable []Value) error {
 				vm.Stack[vm.ESP] = stackItem
 
 			} else {
-				// 如果函数无返回值或未返回, 就向栈上PUSH一个Void值
+				// 如果函数无返回值或未返回,
+				// 就向栈上PUSH一个临时的Void值
 				stackItem := &StackItem{
-					Type: VAR_IDX,
+					Type: STACK_TEMP,
 					Value: Value{
 						Type:  parser.VVoid,
 						Value: nil,
