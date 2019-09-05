@@ -4,4 +4,7 @@ contract mycnt {
     }
 
     var x = myfunc(111, 222)
+    println(x)
+    var y = 123
+    println(y)
 }

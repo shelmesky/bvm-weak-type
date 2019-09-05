@@ -82,7 +82,7 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 			fmt.Printf("\n")
 
 		case runtime.CALLEMBED:
-			fmt.Printf("CALLEMBED %d\n", codes[1])
+			fmt.Printf("Compile>  CALLEMBED %d\n", codes[1])
 		}
 	}
 
@@ -352,8 +352,24 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 		nFunc := node.Value.(*parser.NCallFunc)
 
 		// 优先在标准库中查找函数
-		embedFunc := runtime.GetEmbedFunc(nFunc.Name)
-		if embedFunc != nil {
+		embedFunc, err := runtime.GetEmbedFunc(nFunc.Name)
+		if err == nil {
+			// 编译实参
+			if nFunc.Params != nil {
+				paramsList := nFunc.Params.Value.(*parser.NParams)
+				for _, expr := range paramsList.Expr {
+					if err = nodeToCode(cmpl, expr); err != nil {
+						return err
+					}
+				}
+
+				// 如果提供的参数数量不等于实际数量
+				if len(paramsList.Expr) != embedFunc.ParamNum {
+					return fmt.Errorf("Call embed function [%s] need %d arguments, got %d.\n",
+						nFunc.Name, embedFunc.ParamNum, len(paramsList.Expr))
+				}
+			}
+
 			cmpl.AppendCode(runtime.CALLEMBED, BCode(embedFunc.Index))
 
 		} else {

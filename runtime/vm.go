@@ -3,6 +3,7 @@ package runtime
 import (
 	"bvm/parser"
 	"fmt"
+	"reflect"
 	"unsafe"
 )
 
@@ -203,6 +204,10 @@ func Run(byteCodeStream []uint16, constantTable []Value) error {
 					valueB = stackItemB.Value.(*Value)
 				}
 
+				if stackItemB.Type == VAR_IDX {
+					valueB = vm.Vars[stackItemB.Value.(int64)]
+				}
+
 				// 将新值赋值给变量
 				value := Value{
 					Type:  parser.VInt,
@@ -212,7 +217,7 @@ func Run(byteCodeStream []uint16, constantTable []Value) error {
 				*(*int64)(unsafe.Pointer(uintptr(stackItemA.Value.(int64)))) =
 					int64(uintptr(unsafe.Pointer(&value)))
 			}
-			fmt.Printf("VM> ASSIGN")
+			fmt.Printf("VM> ASSIGN\n")
 
 		case JMP:
 			dest := int64(int16(code[i+1]))
@@ -238,7 +243,7 @@ func Run(byteCodeStream []uint16, constantTable []Value) error {
 			paramCount := code[i] // 参数数量
 			var paramValue *Value // 实参
 			for j := 0; j <= int(paramCount)-1; j++ {
-				paramItem := vm.Stack[vm.ESP-j] // 实参在stack中的元素
+				paramItem := vm.Stack[vm.ESP] // 实参在stack中的元素
 				if paramItem.Type == CONST_IDX {
 					paramValue = vm.Constants[paramItem.Value.(int64)] // 获取真正的实参
 				}
@@ -247,10 +252,68 @@ func Run(byteCodeStream []uint16, constantTable []Value) error {
 				if paramValue != nil {
 					vm.Vars[argumentVarIdx] = paramValue // 将实参赋值给形参
 				}
+				// 运行GETPARAMS指令前, 实参已经由调用者PUSH到栈上
+				// 在将这些实参复制给形参后, 栈上的实参已经不再使用
+				// 所以栈要回退到PUSH实参之前
+				// 回退完毕后, 如果是变量赋值, 则栈顶保存的是SETVAR指令放在栈顶的变量
+				vm.ESP--
 			}
 			fmt.Printf("VM> GETPARAMS %d\n", paramCount)
 
 		case CALLEMBED:
+			i++
+			funcIdx := code[i]
+			embedFunc := Stdlib[funcIdx]
+
+			// 从栈中获取实参
+			var funcParams []*Value
+			for j := 0; j <= embedFunc.ParamNum-1; j++ {
+				stackItem := vm.Stack[vm.ESP-j]
+				if stackItem.Type == VAR_IDX {
+					param := vm.Vars[stackItem.Value.(int64)]
+					funcParams = append(funcParams, param)
+				}
+			}
+
+			// 将实参赋值给形参, 并封装为reflect.Value类型以方便调用reflect.ValueOf().Call()
+			funcArguments := make([]reflect.Value, embedFunc.ParamNum+1)
+			funcArguments[0] = reflect.ValueOf(vm)
+			for idx := range funcParams {
+				funcArguments[idx+1] = reflect.ValueOf(funcParams[idx])
+			}
+
+			// 调用函数并接收返回值
+			var result []reflect.Value
+			result = reflect.ValueOf(embedFunc.Func).Call(funcArguments)
+
+			// 如果函数有返回值, 但是未返回任何值
+			if embedFunc.HasReturn && len(result) == 0 {
+				return fmt.Errorf("Embed function has return value, but return nothing.\n")
+			}
+
+			// 如果被调用函数定义有返回值, 且返回了值
+			if embedFunc.HasReturn && len(result) > 0 {
+				ret := result[0].Interface()
+				retValue := ret.(int)
+				stackItem := &StackItem{
+					Type:  VAR_IDX,
+					Value: retValue,
+				}
+				vm.ESP++
+				vm.Stack[vm.ESP] = stackItem
+
+			} else {
+				// 如果函数无返回值或未返回, 就向栈上PUSH一个Void值
+				stackItem := &StackItem{
+					Type: VAR_IDX,
+					Value: Value{
+						Type:  parser.VVoid,
+						Value: nil,
+					},
+				}
+				vm.ESP++
+				vm.Stack[vm.ESP] = stackItem
+			}
 
 		default:
 			return fmt.Errorf("VM> unknown command %d\n", code[i])

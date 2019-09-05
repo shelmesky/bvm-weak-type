@@ -1,5 +1,7 @@
 package runtime
 
+import "fmt"
+
 type EmbedFunc struct {
 	Index     int
 	Name      string      // 函数名称
@@ -15,19 +17,20 @@ var (
 	}
 )
 
-func GetEmbedFunc(name string) *EmbedFunc {
+func GetEmbedFunc(name string) (*EmbedFunc, error) {
 	var embedFunc *EmbedFunc
 
 	for idx := range Stdlib {
 		embedFunc = &Stdlib[idx]
 		if embedFunc.Name == name {
-			return embedFunc
+			return embedFunc, nil
 		}
 	}
 
-	return embedFunc
+	return embedFunc, fmt.Errorf("Can not find embed function %s\n", name)
 }
 
-func Println() int64 {
+func Println(vm VM, value *Value) int {
+	fmt.Printf("%v\n", value.Value)
 	return 0
 }
