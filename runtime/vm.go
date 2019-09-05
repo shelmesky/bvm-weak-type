@@ -199,10 +199,8 @@ func Run(byteCodeStream []uint16, constantTable []Value) error {
 			paramCount := code[i] // 参数数量
 			var paramValue *Value // 实参
 			for j := 0; j <= int(paramCount)-1; j++ {
-				paramItem := vm.Stack[vm.ESP] // 实参在stack中的元素
-				if paramItem.Type == CONST_IDX {
-					paramValue = vm.Constants[paramItem.Value.(int64)] // 获取真正的实参
-				}
+				paramItem := vm.Stack[vm.ESP]                 // 实参在stack中的元素
+				paramValue = getValueFromStack(vm, paramItem) //  根据栈元素类型获取Value
 				i++
 				argumentVarIdx := int64(code[i]) // 形参在VM变量内存中的索引
 				if paramValue != nil {
@@ -225,10 +223,8 @@ func Run(byteCodeStream []uint16, constantTable []Value) error {
 			var funcParams []*Value
 			for j := 0; j <= embedFunc.ParamNum-1; j++ {
 				stackItem := vm.Stack[vm.ESP-j]
-				if stackItem.Type == VAR_IDX {
-					paramValue := vm.Vars[stackItem.Value.(int64)]
-					funcParams = append(funcParams, paramValue)
-				}
+				paramValue := getValueFromStack(vm, stackItem)
+				funcParams = append(funcParams, paramValue)
 			}
 
 			// 将实参赋值给形参, 并封装为reflect.Value类型以方便调用reflect.ValueOf().Call()
