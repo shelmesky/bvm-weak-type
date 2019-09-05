@@ -62,6 +62,7 @@ func Run(cmpl *compiler.CompileEnv) error {
 				Type: VAR_IDX,
 			}
 			vm.Vars = append(vm.Vars, &variable)
+			fmt.Printf("VM> INITVARS\n")
 
 		case runtime.PUSH:
 			i++
@@ -83,6 +84,7 @@ func Run(cmpl *compiler.CompileEnv) error {
 				Value: idx,
 			}
 			vm.Stack[vm.ESP] = &stackItem
+			fmt.Printf("VM> PUSH %d\n", code[i])
 
 		case runtime.SETVAR:
 			i++
@@ -97,6 +99,7 @@ func Run(cmpl *compiler.CompileEnv) error {
 				Value: varPointer,
 			}
 			vm.Stack[vm.ESP] = &stackItem
+			fmt.Printf("VM> SETVAR %d\n", code[i])
 
 		case runtime.GETVAR:
 			i++
@@ -107,6 +110,7 @@ func Run(cmpl *compiler.CompileEnv) error {
 				Value: varIndex,
 			}
 			vm.Stack[vm.ESP] = &stackItem
+			fmt.Printf("VM> GETVAR %d\n", code[i])
 
 		case runtime.ADD:
 			// 从stack获取栈顶的2个元素
@@ -147,6 +151,7 @@ func Run(cmpl *compiler.CompileEnv) error {
 					},
 				}
 			}
+			fmt.Printf("VM> ADD\n")
 
 		case runtime.MUL:
 			// 从stack获取栈顶的2个元素
@@ -179,6 +184,7 @@ func Run(cmpl *compiler.CompileEnv) error {
 					},
 				}
 			}
+			fmt.Printf("VM> MUL")
 
 		// 赋值操作符
 		case runtime.ASSIGN:
@@ -206,21 +212,25 @@ func Run(cmpl *compiler.CompileEnv) error {
 				*(*int64)(unsafe.Pointer(uintptr(stackItemA.Value.(int64)))) =
 					int64(uintptr(unsafe.Pointer(&value)))
 			}
+			fmt.Printf("VM> ASSIGN")
 
 		case runtime.JMP:
 			dest := int64(int16(code[i+1]))
 			i += dest
+			fmt.Printf("VM> JMP %d\n", i)
 
 		case runtime.CALLFUNC:
 			calls[coff] = int64(i) + 2        // 在coff处将当前指令后的2条指令指针保存
 			coff += 1                         // coff变量+1
 			offset := int64(int16(code[i+1])) // 跳转到目标函数
 			i += offset
+			fmt.Printf("VM> CALLFUNC  dest: %d  origin: %d\n", i, calls[coff-1])
 			continue
 
 		case runtime.RETFUNC:
 			coff -= 1
 			i = calls[coff] // 从函数返回，恢复指令指针
+			fmt.Printf("VM> RETRUNC %d\n", i)
 			continue
 
 		case runtime.GETPARAMS:
@@ -238,9 +248,10 @@ func Run(cmpl *compiler.CompileEnv) error {
 					vm.Vars[argumentVarIdx] = paramValue // 将实参赋值给形参
 				}
 			}
+			fmt.Printf("VM> GETPARAMS %d\n", paramCount)
 
 		default:
-			return fmt.Errorf("unknown command %d\n", code[i])
+			return fmt.Errorf("VM> unknown command %d\n", code[i])
 
 		}
 		i++
