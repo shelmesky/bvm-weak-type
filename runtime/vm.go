@@ -9,23 +9,32 @@ import (
 
 type BCode uint16
 
+// 栈元素的类型
 const (
-	CONST_IDX = iota
-	VAR_IDX
-	VAR_POINTER
-	STACK_TEMP
+	CONST_IDX   = iota // 常量
+	VAR_IDX            // 变量内存
+	VAR_POINTER        // 指针的整数形式
+	STACK_TEMP         // 栈中的临时元素
 	FUNC_IDX
 )
 
+// 值类型, 可保存类型任何值
 type Value struct {
-	Type  int
-	Value interface{}
+	Type  int         // 可以是VVoid/VInt/VStr/VFloat等类型
+	Value interface{} // 实际的值
 }
 
+// 栈元素
 type StackItem struct {
-	Type  int
-	Value interface{}
+	Type  int         // 可以是CONST_IDX/VAR_IDX/VAR_POINTER等类型
+	Value interface{} // 实际的值
 }
+
+/*
+vm.Stack中元素为StackItem,
+StackItem的Value大部分情况下是Value类型,
+但也有可能是简单类型, 例如整数或字符串等.
+*/
 
 type VM struct {
 	Constants []*Value     // 常量
@@ -282,11 +291,13 @@ func getValueFromStack(vm VM, stackItem *StackItem) *Value {
 	var value *Value
 
 	if stackItem.Type == CONST_IDX {
-		value = vm.Constants[stackItem.Value.(int64)]
+		idx := stackItem.Value.(int64)
+		value = vm.Constants[idx]
 	}
 
 	if stackItem.Type == VAR_IDX {
-		value = vm.Vars[stackItem.Value.(int64)]
+		idx := stackItem.Value.(int64)
+		value = vm.Vars[idx]
 	}
 
 	if stackItem.Type == STACK_TEMP {
