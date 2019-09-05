@@ -337,6 +337,7 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 		cmpl.InFunc = false
 
 		// 如果函数最后没有return关键字, 则在指令流中插入RETFUNC
+		// #TODO: 如果函数的return没有返回值, 或没有return关键字, 则应该在stack上插入VVoid类型
 		if cmpl.Code[len(cmpl.Code)-1] != runtime.RETFUNC {
 			cmpl.AppendCode(runtime.RETFUNC)
 		}
