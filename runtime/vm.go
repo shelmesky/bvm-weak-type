@@ -118,28 +118,8 @@ func Run(byteCodeStream []uint16, constantTable []Value) error {
 			stackItemA := vm.Stack[vm.ESP-1]
 			stackItemB := vm.Stack[vm.ESP]
 
-			// 如果2个元素都是常量， 则从常量表中获取Value
-			if stackItemA.Type == CONST_IDX {
-				valueA = vm.Constants[stackItemA.Value.(int64)]
-			}
-			if stackItemB.Type == CONST_IDX {
-				valueB = vm.Constants[stackItemB.Value.(int64)]
-			}
-
-			if stackItemA.Type == STACK_TEMP {
-				valueB = stackItemA.Value.(*Value)
-			}
-			if stackItemB.Type == STACK_TEMP {
-				valueB = stackItemB.Value.(*Value)
-			}
-
-			if stackItemA.Type == VAR_IDX {
-				valueA = vm.Vars[stackItemA.Value.(int64)]
-			}
-
-			if stackItemB.Type == VAR_IDX {
-				valueB = vm.Vars[stackItemB.Value.(int64)]
-			}
+			valueA = getValueFromStack(vm, stackItemA)
+			valueB = getValueFromStack(vm, stackItemB)
 
 			if valueA.Type == parser.VInt && valueB.Type == parser.VInt {
 				result := valueA.Value.(int64) + valueB.Value.(int64)
@@ -159,20 +139,8 @@ func Run(byteCodeStream []uint16, constantTable []Value) error {
 			stackItemA := vm.Stack[vm.ESP-1]
 			stackItemB := vm.Stack[vm.ESP]
 
-			// 如果2个元素都是常量， 则从常量表中获取Value
-			if stackItemA.Type == CONST_IDX {
-				valueA = vm.Constants[stackItemA.Value.(int64)]
-			}
-			if stackItemB.Type == CONST_IDX {
-				valueB = vm.Constants[stackItemB.Value.(int64)]
-			}
-
-			if stackItemA.Type == STACK_TEMP {
-				valueB = stackItemA.Value.(*Value)
-			}
-			if stackItemB.Type == STACK_TEMP {
-				valueB = stackItemB.Value.(*Value)
-			}
+			valueA = getValueFromStack(vm, stackItemA)
+			valueB = getValueFromStack(vm, stackItemB)
 
 			if valueA.Type == parser.VInt && valueB.Type == parser.VInt {
 				result := valueA.Value.(int64) * valueB.Value.(int64)
@@ -194,19 +162,7 @@ func Run(byteCodeStream []uint16, constantTable []Value) error {
 
 			// 如果被赋值的类型是VAR_POINTER
 			if stackItemA.Type == VAR_POINTER {
-				// 常量索引
-				if stackItemB.Type == CONST_IDX {
-					valueB = vm.Constants[stackItemB.Value.(int64)]
-				}
-
-				// 栈临时变量
-				if stackItemB.Type == STACK_TEMP {
-					valueB = stackItemB.Value.(*Value)
-				}
-
-				if stackItemB.Type == VAR_IDX {
-					valueB = vm.Vars[stackItemB.Value.(int64)]
-				}
+				valueB = getValueFromStack(vm, stackItemB)
 
 				// 将新值赋值给变量
 				value := Value{
@@ -270,8 +226,8 @@ func Run(byteCodeStream []uint16, constantTable []Value) error {
 			for j := 0; j <= embedFunc.ParamNum-1; j++ {
 				stackItem := vm.Stack[vm.ESP-j]
 				if stackItem.Type == VAR_IDX {
-					param := vm.Vars[stackItem.Value.(int64)]
-					funcParams = append(funcParams, param)
+					paramValue := vm.Vars[stackItem.Value.(int64)]
+					funcParams = append(funcParams, paramValue)
 				}
 			}
 
@@ -323,4 +279,23 @@ func Run(byteCodeStream []uint16, constantTable []Value) error {
 	}
 
 	return nil
+}
+
+// 根据栈元素的类型, 在常量表/变量表/栈元素本身中获取Value类型
+func getValueFromStack(vm VM, stackItem *StackItem) *Value {
+	var value *Value
+
+	if stackItem.Type == CONST_IDX {
+		value = vm.Constants[stackItem.Value.(int64)]
+	}
+
+	if stackItem.Type == VAR_IDX {
+		value = vm.Vars[stackItem.Value.(int64)]
+	}
+
+	if stackItem.Type == STACK_TEMP {
+		value = stackItem.Value.(*Value)
+	}
+
+	return value
 }
