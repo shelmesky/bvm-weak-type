@@ -80,6 +80,9 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 				fmt.Printf("]")
 			}
 			fmt.Printf("\n")
+
+		case runtime.CALLEMBED:
+			fmt.Printf("CALLEMBED %d\n", codes[1])
 		}
 	}
 
@@ -348,35 +351,43 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 	case parser.TCallFunc:
 		nFunc := node.Value.(*parser.NCallFunc)
 
-		var fInfo FuncInfo
-		if fInfo, ok = cmpl.FuncTable[nFunc.Name]; !ok {
-			return fmt.Errorf("Function %s hasn't been defined\n", nFunc.Name)
-		}
+		// 优先在标准库中查找函数
+		embedFunc := runtime.GetEmbedFunc(nFunc.Name)
+		if embedFunc != nil {
+			cmpl.AppendCode(runtime.CALLEMBED, BCode(embedFunc.Index))
 
-		// 编译实参
-		if nFunc.Params != nil {
-			paramsList := nFunc.Params.Value.(*parser.NParams)
-			for _, expr := range paramsList.Expr {
-				if err = nodeToCode(cmpl, expr); err != nil {
-					return err
+		} else {
+
+			var fInfo FuncInfo
+			if fInfo, ok = cmpl.FuncTable[nFunc.Name]; !ok {
+				return fmt.Errorf("Function %s hasn't been defined\n", nFunc.Name)
+			}
+
+			// 编译实参
+			if nFunc.Params != nil {
+				paramsList := nFunc.Params.Value.(*parser.NParams)
+				for _, expr := range paramsList.Expr {
+					if err = nodeToCode(cmpl, expr); err != nil {
+						return err
+					}
+				}
+
+				// 如果提供的参数数量不等于实际函数的参数
+				if len(paramsList.Expr) != fInfo.ParamsNum {
+					return fmt.Errorf("Call function [%s] need %d arguments, got %d.\n",
+						nFunc.Name, fInfo.ParamsNum, len(paramsList.Expr))
+				}
+			} else {
+				// 如果调用时未提供参数, 但函数有参数则报错
+				if fInfo.ParamsNum > 0 {
+					return fmt.Errorf("Call function [%s] need %d arguments, got 0.\n",
+						nFunc.Name, fInfo.ParamsNum)
 				}
 			}
 
-			// 如果提供的参数数量不等于实际函数的参数
-			if len(paramsList.Expr) != fInfo.ParamsNum {
-				return fmt.Errorf("Call function [%s] need %d arguments, got %d.\n",
-					nFunc.Name, fInfo.ParamsNum, len(paramsList.Expr))
-			}
-		} else {
-			// 如果调用时未提供参数, 但函数有参数则报错
-			if fInfo.ParamsNum > 0 {
-				return fmt.Errorf("Call function [%s] need %d arguments, got 0.\n",
-					nFunc.Name, fInfo.ParamsNum)
-			}
+			offset := fInfo.Offset - int64(len(cmpl.Code))
+			cmpl.AppendCode(runtime.CALLFUNC, BCode(offset))
 		}
-
-		offset := fInfo.Offset - int64(len(cmpl.Code))
-		cmpl.AppendCode(runtime.CALLFUNC, BCode(offset))
 	}
 
 	return nil

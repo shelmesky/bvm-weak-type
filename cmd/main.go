@@ -3,7 +3,7 @@ package main
 import (
 	"bvm/compiler"
 	"bvm/parser"
-	"bvm/vm"
+	"bvm/runtime"
 	"io/ioutil"
 	"log"
 	"os"
@@ -39,14 +39,41 @@ func main() {
 	}
 
 	cmplResult, err := compiler.Compile(root)
+	if cmplResult != nil {
+		bytesCodeStream := getByteCodes(cmplResult)
+		constantTable := getConstantTable(cmplResult)
 
-	if err != nil {
-		panic(err.Error())
+		if err != nil {
+			panic(err.Error())
+		}
+
+		err = runtime.Run(bytesCodeStream, constantTable)
+
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+}
+
+func getByteCodes(cmplResult *compiler.CompileEnv) []uint16 {
+	var codeStream []uint16
+
+	for idx := range cmplResult.Code {
+		codeStream = append(codeStream, uint16(cmplResult.Code[idx]))
 	}
 
-	err = vm.Run(cmplResult)
+	return codeStream
+}
 
-	if err != nil {
-		panic(err.Error())
+func getConstantTable(cmplResult *compiler.CompileEnv) []runtime.Value {
+	var constantTable []runtime.Value
+
+	for idx := range cmplResult.ConstantsTable {
+		var cnst runtime.Value
+		cnst.Type = cmplResult.ConstantsTable[idx].Type
+		cnst.Value = cmplResult.ConstantsTable[idx].Value
+		constantTable = append(constantTable, cnst)
 	}
+
+	return constantTable
 }

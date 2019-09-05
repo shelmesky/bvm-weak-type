@@ -16,4 +16,5 @@ const (
 	RETURN    // return from contract
 	CALLFUNC  // call function
 	GETPARAMS // load function params
+	CALLEMBED // call embed function
 )

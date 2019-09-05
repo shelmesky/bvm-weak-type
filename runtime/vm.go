@@ -1,12 +1,12 @@
-package vm
+package runtime
 
 import (
-	"bvm/compiler"
 	"bvm/parser"
-	"bvm/runtime"
 	"fmt"
 	"unsafe"
 )
+
+type BCode uint16
 
 const (
 	CONST_IDX = iota
@@ -35,7 +35,7 @@ type VM struct {
 	EBP       int          // 栈基址指针
 }
 
-func Run(cmpl *compiler.CompileEnv) error {
+func Run(byteCodeStream []uint16, constantTable []Value) error {
 	var (
 		valueA *Value
 		valueB *Value
@@ -51,24 +51,24 @@ func Run(cmpl *compiler.CompileEnv) error {
 		EBP:       0,
 	}
 
-	code := cmpl.Code
+	code := byteCodeStream
 	length := int64(len(code))
 	var i int64
 
 	for i < length {
 		switch code[i] {
-		case runtime.INITVARS:
+		case INITVARS:
 			variable := Value{
 				Type: VAR_IDX,
 			}
 			vm.Vars = append(vm.Vars, &variable)
 			fmt.Printf("VM> INITVARS\n")
 
-		case runtime.PUSH:
+		case PUSH:
 			i++
 			vm.ESP++
 			// 根据PUSH的操作数获取在常量表中的常量值
-			cnst := cmpl.ConstantsTable[code[i]]
+			cnst := constantTable[code[i]]
 			// 将常量值封装为Value结构
 			value := Value{
 				Type:  cnst.Type,
@@ -86,7 +86,7 @@ func Run(cmpl *compiler.CompileEnv) error {
 			vm.Stack[vm.ESP] = &stackItem
 			fmt.Printf("VM> PUSH %d\n", code[i])
 
-		case runtime.SETVAR:
+		case SETVAR:
 			i++
 			vm.ESP++
 			// 根据SETVAR的操作数获取变量的索引
@@ -101,7 +101,7 @@ func Run(cmpl *compiler.CompileEnv) error {
 			vm.Stack[vm.ESP] = &stackItem
 			fmt.Printf("VM> SETVAR %d\n", code[i])
 
-		case runtime.GETVAR:
+		case GETVAR:
 			i++
 			vm.ESP++
 			varIndex := int64(code[i])
@@ -112,7 +112,7 @@ func Run(cmpl *compiler.CompileEnv) error {
 			vm.Stack[vm.ESP] = &stackItem
 			fmt.Printf("VM> GETVAR %d\n", code[i])
 
-		case runtime.ADD:
+		case ADD:
 			// 从stack获取栈顶的2个元素
 			stackItemA := vm.Stack[vm.ESP-1]
 			stackItemB := vm.Stack[vm.ESP]
@@ -153,7 +153,7 @@ func Run(cmpl *compiler.CompileEnv) error {
 			}
 			fmt.Printf("VM> ADD\n")
 
-		case runtime.MUL:
+		case MUL:
 			// 从stack获取栈顶的2个元素
 			stackItemA := vm.Stack[vm.ESP-1]
 			stackItemB := vm.Stack[vm.ESP]
@@ -187,7 +187,7 @@ func Run(cmpl *compiler.CompileEnv) error {
 			fmt.Printf("VM> MUL")
 
 		// 赋值操作符
-		case runtime.ASSIGN:
+		case ASSIGN:
 			stackItemA := vm.Stack[vm.ESP-1]
 			stackItemB := vm.Stack[vm.ESP]
 
@@ -214,12 +214,12 @@ func Run(cmpl *compiler.CompileEnv) error {
 			}
 			fmt.Printf("VM> ASSIGN")
 
-		case runtime.JMP:
+		case JMP:
 			dest := int64(int16(code[i+1]))
 			i += dest
 			fmt.Printf("VM> JMP %d\n", i)
 
-		case runtime.CALLFUNC:
+		case CALLFUNC:
 			calls[coff] = int64(i) + 2        // 在coff处将当前指令后的2条指令指针保存
 			coff += 1                         // coff变量+1
 			offset := int64(int16(code[i+1])) // 跳转到目标函数
@@ -227,13 +227,13 @@ func Run(cmpl *compiler.CompileEnv) error {
 			fmt.Printf("VM> CALLFUNC  dest: %d  origin: %d\n", i, calls[coff-1])
 			continue
 
-		case runtime.RETFUNC:
+		case RETFUNC:
 			coff -= 1
 			i = calls[coff] // 从函数返回，恢复指令指针
 			fmt.Printf("VM> RETRUNC %d\n", i)
 			continue
 
-		case runtime.GETPARAMS:
+		case GETPARAMS:
 			i++
 			paramCount := code[i] // 参数数量
 			var paramValue *Value // 实参
@@ -249,6 +249,8 @@ func Run(cmpl *compiler.CompileEnv) error {
 				}
 			}
 			fmt.Printf("VM> GETPARAMS %d\n", paramCount)
+
+		case CALLEMBED:
 
 		default:
 			return fmt.Errorf("VM> unknown command %d\n", code[i])
