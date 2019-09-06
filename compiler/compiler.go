@@ -64,7 +64,7 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 		case runtime.JMP:
 			fmt.Printf("Compile>  JMP [%d]\n", codes[1])
 		case runtime.RETFUNC:
-			fmt.Println("Compile>  RETFUNC")
+			fmt.Println("Compile>  RETFUNC expr:%d\n", codes[1])
 		case runtime.RETURN:
 			fmt.Println("Compile>  RETURN")
 		case runtime.CALLFUNC:
@@ -113,7 +113,7 @@ func (this *CompileEnv) InitVars(node *parser.Node, vars []parser.NVar) ([]BCode
 
 		this.VarTable[v.Name] = symbol
 
-		this.AppendCode(runtime.INITVARS)
+		//this.AppendCode(runtime.INITVARS)
 	}
 
 	return varIdxList, nil
@@ -281,7 +281,12 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 		}
 
 		if cmpl.InFunc {
-			cmpl.AppendCode(runtime.RETFUNC)
+			if expr != nil {
+				// 如果return有表达式
+				cmpl.AppendCode(runtime.RETFUNC, 1)
+			} else {
+				cmpl.AppendCode(runtime.RETFUNC, 0)
+			}
 		} else {
 			cmpl.AppendCode(runtime.RETURN)
 		}
@@ -339,7 +344,7 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 		// 如果函数最后没有return关键字, 则在指令流中插入RETFUNC
 		// #TODO: 如果函数的return没有返回值, 或没有return关键字, 则应该在stack上插入VVoid类型
 		if cmpl.Code[len(cmpl.Code)-1] != runtime.RETFUNC {
-			cmpl.AppendCode(runtime.RETFUNC)
+			cmpl.AppendCode(runtime.RETFUNC, 0)
 		}
 
 		// 跳出函数定义

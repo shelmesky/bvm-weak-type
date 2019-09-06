@@ -45,7 +45,7 @@ type VM struct {
 	EBP       int          // 栈基址指针
 }
 
-func Run(byteCodeStream []uint16, constantTable []Value) error {
+func Run(byteCodeStream []uint16, constantTable []Value, varTableSize int) error {
 	var (
 		valueA *Value
 		valueB *Value
@@ -65,14 +65,23 @@ func Run(byteCodeStream []uint16, constantTable []Value) error {
 	length := int64(len(code))
 	var i int64
 
+	for j := 0; j < varTableSize; j++ {
+		variable := Value{
+			Type: VAR_IDX,
+		}
+		vm.Vars = append(vm.Vars, &variable)
+	}
+
 	for i < length {
 		switch code[i] {
-		case INITVARS:
-			variable := Value{
-				Type: VAR_IDX,
-			}
-			vm.Vars = append(vm.Vars, &variable)
-			fmt.Printf("VM> INITVARS\n")
+		/*
+			case INITVARS:
+				variable := Value{
+					Type: VAR_IDX,
+				}
+				vm.Vars = append(vm.Vars, &variable)
+				fmt.Printf("VM> INITVARS\n")
+		*/
 
 		case PUSH:
 			i++
@@ -101,6 +110,7 @@ func Run(byteCodeStream []uint16, constantTable []Value) error {
 			vm.ESP++
 			// 根据SETVAR的操作数获取变量的索引
 			varIndex := code[i]
+			fmt.Printf("VM> SETVAR %d\n", code[i])
 			// 获取索引在vm.Vars中的指针
 			varPointer := int64(uintptr(unsafe.Pointer(&vm.Vars[varIndex])))
 			// 保存指针到stack元素
@@ -109,7 +119,6 @@ func Run(byteCodeStream []uint16, constantTable []Value) error {
 				Value: varPointer,
 			}
 			vm.Stack[vm.ESP] = &stackItem
-			fmt.Printf("VM> SETVAR %d\n", code[i])
 
 		case GETVAR:
 			i++
@@ -198,6 +207,20 @@ func Run(byteCodeStream []uint16, constantTable []Value) error {
 			continue
 
 		case RETFUNC:
+			i++
+			hasReturnExpr := code[i]
+			// 如果从函数中没有返回表达式
+			// 则在栈顶放置一个VVoid类型
+			if hasReturnExpr == 0 {
+				vm.ESP++
+				vm.Stack[vm.ESP] = &StackItem{
+					Type: STACK_TEMP,
+					Value: &Value{
+						Type:  parser.VVoid,
+						Value: nil,
+					},
+				}
+			}
 			coff -= 1
 			i = calls[coff] // 从函数返回，恢复指令指针
 			fmt.Printf("VM> RETRUNC %d\n", i)
@@ -269,7 +292,7 @@ func Run(byteCodeStream []uint16, constantTable []Value) error {
 				// 就向栈上PUSH一个临时的Void值
 				stackItem := &StackItem{
 					Type: STACK_TEMP,
-					Value: Value{
+					Value: &Value{
 						Type:  parser.VVoid,
 						Value: nil,
 					},

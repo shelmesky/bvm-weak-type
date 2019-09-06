@@ -42,12 +42,13 @@ func main() {
 	if cmplResult != nil {
 		bytesCodeStream := getByteCodes(cmplResult)
 		constantTable := getConstantTable(cmplResult)
+		varTableSize := len(cmplResult.VarTable)
 
 		if err != nil {
 			panic(err.Error())
 		}
 
-		err = runtime.Run(bytesCodeStream, constantTable)
+		err = runtime.Run(bytesCodeStream, constantTable, varTableSize)
 
 		if err != nil {
 			panic(err.Error())

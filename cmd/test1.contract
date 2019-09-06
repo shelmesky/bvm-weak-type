@@ -1,4 +1,8 @@
 contract mycnt {
+    func xxxxx(z) {
+        var m = z
+    }
+
     func myfunc(a,b) {
         return a+b
     }
@@ -7,4 +11,6 @@ contract mycnt {
     println(x)
     var y = 123
     println(y)
+
+
 }
