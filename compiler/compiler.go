@@ -10,6 +10,7 @@ type BCode uint16
 
 // 函数信息
 type FuncInfo struct {
+	Index       int    // 函数在列表中的索引
 	Name        string // 函数名
 	Offset      int64  // 在指令流中的开始位置
 	ParamsNum   int    // 参数数量
@@ -34,6 +35,7 @@ type Variable struct {
 type CompileEnv struct {
 	VarTable       map[string]Variable // 变量表
 	FuncTable      map[string]FuncInfo // 函数表
+	FuncList       []FuncInfo          // 有序函数表
 	ConstantsTable []Const             // 常量表
 	Code           []BCode             // 字节码
 	InFunc         bool                // 是否正在编译函数
@@ -64,7 +66,7 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 		case runtime.JMP:
 			fmt.Printf("Compile>  JMP [%d]\n", codes[1])
 		case runtime.RETFUNC:
-			fmt.Println("Compile>  RETFUNC expr:%d\n", codes[1])
+			fmt.Printf("Compile>  RETFUNC expr:[%d]\n", codes[1])
 		case runtime.RETURN:
 			fmt.Println("Compile>  RETURN")
 		case runtime.CALLFUNC:
@@ -155,9 +157,11 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 	case parser.TBlock:
 		block := node.Value.(*parser.NBlock)
 
-		for _, child := range block.Statements {
-			if err = nodeToCode(cmpl, child); err != nil {
-				return err
+		if len(block.Statements) > 0 {
+			for _, child := range block.Statements {
+				if err = nodeToCode(cmpl, child); err != nil {
+					return err
+				}
 			}
 		}
 
@@ -330,8 +334,10 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 
 		// 编译函数体
 		varCount := len(cmpl.VarTable)
-		if err = nodeToCode(cmpl, nFunc.Body); err != nil {
-			return err
+		if nFunc.Body != nil {
+			if err = nodeToCode(cmpl, nFunc.Body); err != nil {
+				return err
+			}
 		}
 
 		// 统计函数体局部变量的数量
@@ -353,6 +359,7 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 
 		// 在函数表中保存
 		cmpl.FuncTable[nFunc.Name] = finfo
+		cmpl.FuncList = append(cmpl.FuncList, finfo)
 
 	case parser.TCallFunc:
 		nFunc := node.Value.(*parser.NCallFunc)
@@ -407,7 +414,8 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 				}
 			}
 
-			offset := fInfo.Offset - int64(len(cmpl.Code))
+			//offset := fInfo.Offset - int64(len(cmpl.Code))
+			offset := fInfo.Index
 			cmpl.AppendCode(runtime.CALLFUNC, BCode(offset))
 		}
 	}

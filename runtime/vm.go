@@ -30,6 +30,16 @@ type StackItem struct {
 	Value interface{} // 实际的值
 }
 
+// 函数信息
+type FuncInfo struct {
+	Index       int    // 函数在列表中的索引
+	Name        string // 函数名
+	Offset      int64  // 在指令流中的开始位置
+	ParamsNum   int    // 参数数量
+	LocalVarNum int    // 局部变量数量
+	HasReturn   bool   // 是否有返回值
+}
+
 /*
 vm.Stack中元素为StackItem,
 StackItem的Value大部分情况下是Value类型,
@@ -37,15 +47,16 @@ StackItem的Value大部分情况下是Value类型,
 */
 
 type VM struct {
-	Constants []*Value     // 常量
-	Vars      []*Value     // 变量
-	Funcs     []*Value     // 函数
-	Stack     []*StackItem // 栈
-	ESP       int          // 栈指针
-	EBP       int          // 栈基址指针
+	Constants        []*Value     // 常量
+	Vars             []*Value     // 变量
+	Funcs            []*Value     // 函数
+	Stack            []*StackItem // 栈
+	ESP              int          // 栈指针
+	EBP              int          // 栈基址指针
+	IdxOfCallingFunc int          // 正在调用的函数
 }
 
-func Run(byteCodeStream []uint16, constantTable []Value, varTableSize int) error {
+func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, varTableSize int) error {
 	var (
 		valueA *Value
 		valueB *Value
@@ -182,6 +193,10 @@ func Run(byteCodeStream []uint16, constantTable []Value, varTableSize int) error
 			if stackItemA.Type == VAR_POINTER {
 				valueB = getValueFromStack(vm, stackItemB)
 
+				if err := checkValue(valueB); err != nil {
+					return err
+				}
+
 				// 将新值赋值给变量
 				value := Value{
 					Type:  parser.VInt,
@@ -199,14 +214,27 @@ func Run(byteCodeStream []uint16, constantTable []Value, varTableSize int) error
 			fmt.Printf("VM> JMP %d\n", i)
 
 		case CALLFUNC:
-			calls[coff] = int64(i) + 2        // 在coff处将当前指令后的2条指令指针保存
-			coff += 1                         // coff变量+1
-			offset := int64(int16(code[i+1])) // 跳转到目标函数
-			i += offset
+			calls[coff] = int64(i) + 2 // 在coff处将当前指令后的2条指令指针保存
+			coff += 1                  // coff变量+1
+			/*
+				offset := int64(int16(code[i+1])) // 跳转到目标函数
+				i = offset
+			*/
+			funcIndex := int(code[i+1])
+			vm.IdxOfCallingFunc = funcIndex // 记录当前正在调用的函数索引
+			fInfo := FuncList[funcIndex]
+			offset := fInfo.Offset
+			i = offset
 			fmt.Printf("VM> CALLFUNC  dest: %d  origin: %d\n", i, calls[coff-1])
 			continue
 
 		case RETFUNC:
+			// 函数返回前查看并缩小栈的大小
+			callingFunc := FuncList[vm.IdxOfCallingFunc]
+			if callingFunc.LocalVarNum > 0 {
+				vm.ESP -= callingFunc.LocalVarNum
+			}
+
 			i++
 			hasReturnExpr := code[i]
 			// 如果从函数中没有返回表达式
@@ -330,4 +358,12 @@ func getValueFromStack(vm VM, stackItem *StackItem) *Value {
 	}
 
 	return value
+}
+
+func checkValue(value *Value) error {
+	if value.Type == parser.VVoid {
+		return fmt.Errorf("Void type is not allowed\n")
+	}
+
+	return nil
 }

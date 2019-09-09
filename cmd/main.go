@@ -42,13 +42,14 @@ func main() {
 	if cmplResult != nil {
 		bytesCodeStream := getByteCodes(cmplResult)
 		constantTable := getConstantTable(cmplResult)
+		funcList := getFuncList(cmplResult)
 		varTableSize := len(cmplResult.VarTable)
 
 		if err != nil {
 			panic(err.Error())
 		}
 
-		err = runtime.Run(bytesCodeStream, constantTable, varTableSize)
+		err = runtime.Run(bytesCodeStream, funcList, constantTable, varTableSize)
 
 		if err != nil {
 			panic(err.Error())
@@ -77,4 +78,21 @@ func getConstantTable(cmplResult *compiler.CompileEnv) []runtime.Value {
 	}
 
 	return constantTable
+}
+
+func getFuncList(cmplResult *compiler.CompileEnv) []runtime.FuncInfo {
+	var FuncList []runtime.FuncInfo
+
+	for idx := range cmplResult.FuncList {
+		var fInfo runtime.FuncInfo
+		fInfo.Offset = cmplResult.FuncList[idx].Offset
+		fInfo.HasReturn = cmplResult.FuncList[idx].HasReturn
+		fInfo.Name = cmplResult.FuncList[idx].Name
+		fInfo.Index = cmplResult.FuncList[idx].Index
+		fInfo.ParamsNum = cmplResult.FuncList[idx].ParamsNum
+		fInfo.LocalVarNum = cmplResult.FuncList[idx].LocalVarNum
+		FuncList = append(FuncList, fInfo)
+	}
+
+	return FuncList
 }
