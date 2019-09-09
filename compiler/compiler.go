@@ -358,6 +358,7 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 		cmpl.Code[start+1] = BCode(funcEnd)
 
 		// 在函数表中保存
+		finfo.Index = len(cmpl.FuncTable)
 		cmpl.FuncTable[nFunc.Name] = finfo
 		cmpl.FuncList = append(cmpl.FuncList, finfo)
 
@@ -415,8 +416,8 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			}
 
 			//offset := fInfo.Offset - int64(len(cmpl.Code))
-			offset := fInfo.Index
-			cmpl.AppendCode(runtime.CALLFUNC, BCode(offset))
+			idx := fInfo.Index
+			cmpl.AppendCode(runtime.CALLFUNC, BCode(idx))
 		}
 	}
 
