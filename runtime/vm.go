@@ -40,6 +40,13 @@ type FuncInfo struct {
 	HasReturn   bool   // 是否有返回值
 }
 
+// 调用栈帧保存函数调用的信息
+// 在函数返回时恢复
+type CallFrame struct {
+	ReturnAddress    int64
+	IdxOfCallingFunc int
+}
+
 /*
 vm.Stack中元素为StackItem,
 StackItem的Value大部分情况下是Value类型,
@@ -61,7 +68,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 		valueA *Value
 		valueB *Value
 	)
-	calls := make([]int64, 1000)
+	calls := make([]CallFrame, 1000)
 	var coff int64
 
 	vm := VM{
@@ -214,14 +221,13 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			fmt.Printf("VM> JMP %d\n", i)
 
 		case CALLFUNC:
-			calls[coff] = int64(i) + 2 // 在coff处将当前指令后的2条指令指针保存
-			coff += 1                  // coff变量+1
-			/*
-				offset := int64(int16(code[i+1])) // 跳转到目标函数
-				i = offset
-			*/
+			var callFrame CallFrame
+			callFrame.ReturnAddress = int64(i) + 2 // 将当前指令后的2条指令指针保存
 			funcIndex := int(code[i+1])
-			vm.IdxOfCallingFunc = funcIndex // 记录当前正在调用的函数索引
+			callFrame.IdxOfCallingFunc = funcIndex // 记录当前正在调用的函数索引
+			calls[coff] = callFrame                // 保存当前调用栈帧
+			coff += 1                              // coff变量+1
+
 			fInfo := FuncList[funcIndex]
 			offset := fInfo.Offset
 			i = offset
@@ -229,8 +235,11 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			continue
 
 		case RETFUNC:
+			coff -= 1
+			// 获取之前的调用栈帧
+			callFrame := calls[coff]
 			// 函数返回前查看并缩小栈的大小
-			callingFunc := FuncList[vm.IdxOfCallingFunc]
+			callingFunc := FuncList[callFrame.IdxOfCallingFunc]
 			if callingFunc.LocalVarNum > 0 {
 				vm.ESP -= callingFunc.LocalVarNum
 			}
@@ -249,8 +258,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 					},
 				}
 			}
-			coff -= 1
-			i = calls[coff] // 从函数返回，恢复指令指针
+			i = callFrame.ReturnAddress // 从函数返回，恢复指令指针
 			fmt.Printf("VM> RETRUNC %d\n", i)
 			continue
 
