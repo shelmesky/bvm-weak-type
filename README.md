@@ -37,8 +37,9 @@ contract mycnt {
  ## 安装方式:
  
  1. 建立golang开发环境
- 2. 建立开发目录: 在当前目录执行 ```mkdir -p bvm/src/bvm```, 并将当前目录作为GOPATH: ```export GOPATH=$(pwd)```
- 3. 克隆代码: 进入```bvm/src/bvm```, 执行: ```git clone https://gitlab.com/bottos-project/bvm.git .```
- 4. 编译代码: 进入代码的```cmd```目录下, 执行: ```go build main.go```
- 5. 运行测试代码: 在代码的cmd目录下运行: ```./main test1.contract```
+ 2. 建立开发目录: 在当前目录执行 ```mkdir -p bvm/src/bvm```
+ 3. 设置GOPATH: 进入```bvm```目录执行: ```export GOPATH=$(pwd)```
+ 4. 克隆代码: 进入```src/bvm```, 执行: ```git clone https://gitlab.com/bottos-project/bvm.git .```
+ 5. 编译代码: 进入代码的```cmd```目录下, 执行: ```go build main.go```
+ 6. 运行测试代码: 在代码的cmd目录下运行: ```./main test1.contract```
  
