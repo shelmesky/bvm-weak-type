@@ -4,11 +4,11 @@ contract mycnt {
         var z = b
     }
 
-    func myfunc1(a) {
-        return a
+    func myfunc1(a, c) {
+        return a+c
     }
 
-    var y = myfunc1(888)
+    var y = myfunc1(111, 888)
 
     println(y)
 
