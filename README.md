@@ -12,17 +12,17 @@
 contract mycnt {
 
     func myfunc0(b) {
-        var z = b
+        var x = b
+        return x
     }
 
     func myfunc1(a, c) {
-        return a+c
+        var r = myfunc0(333)
+        return a+c+r
     }
 
-    var y = myfunc1(111, 888)
-
+    var y = myfunc1(111, 222)
     println(y)
-
 }
 ```
 
