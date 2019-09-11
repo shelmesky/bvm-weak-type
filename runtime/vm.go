@@ -45,6 +45,7 @@ type FuncInfo struct {
 type CallFrame struct {
 	ReturnAddress    int64
 	IdxOfCallingFunc int
+	ESP              int
 }
 
 /*
@@ -74,7 +75,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 	vm := VM{
 		Constants: make([]*Value, 0),
 		Vars:      make([]*Value, 0),
-		Stack:     make([]*StackItem, 256),
+		Stack:     make([]*StackItem, 10, 1024),
 		ESP:       0,
 		EBP:       0,
 	}
@@ -157,6 +158,14 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			valueA = getValueFromStack(vm, stackItemA)
 			valueB = getValueFromStack(vm, stackItemB)
 
+			if err := checkValue(valueA); err != nil {
+				return err
+			}
+
+			if err := checkValue(valueB); err != nil {
+				return err
+			}
+
 			if valueA.Type == parser.VInt && valueB.Type == parser.VInt {
 				result := valueA.Value.(int64) + valueB.Value.(int64)
 				vm.ESP--
@@ -177,6 +186,14 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 
 			valueA = getValueFromStack(vm, stackItemA)
 			valueB = getValueFromStack(vm, stackItemB)
+
+			if err := checkValue(valueA); err != nil {
+				return err
+			}
+
+			if err := checkValue(valueB); err != nil {
+				return err
+			}
 
 			if valueA.Type == parser.VInt && valueB.Type == parser.VInt {
 				result := valueA.Value.(int64) * valueB.Value.(int64)
@@ -225,10 +242,17 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			callFrame.ReturnAddress = int64(i) + 2 // 将当前指令后的2条指令指针保存
 			funcIndex := int(code[i+1])
 			callFrame.IdxOfCallingFunc = funcIndex // 记录当前正在调用的函数索引
-			calls[coff] = callFrame                // 保存当前调用栈帧
-			coff += 1                              // coff变量+1
+			callFrame.ESP = vm.ESP                 // 保存栈指针
 
 			fInfo := FuncList[funcIndex]
+			// 如果被调函数有参数, 就在保存调用栈时预先减去参数的数量
+			// 因为GETPARAMS指令在复制实参到形参后, 会将实参出栈, 栈会缩小
+			if fInfo.ParamsNum > 0 {
+				callFrame.ESP -= fInfo.ParamsNum
+			}
+			calls[coff] = callFrame // 保存当前调用栈帧
+			coff += 1               // coff变量+1
+
 			offset := fInfo.Offset
 			i = offset
 			fmt.Printf("VM> CALLFUNC  dest: %d  origin: %d\n", i, calls[coff-1])
@@ -238,18 +262,23 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			coff -= 1
 			// 获取之前的调用栈帧
 			callFrame := calls[coff]
-			// 函数返回前查看并缩小栈的大小
-			callingFunc := FuncList[callFrame.IdxOfCallingFunc]
-			if callingFunc.LocalVarNum > 0 {
-				vm.ESP -= callingFunc.LocalVarNum
-			}
+
+			// 在跳转回调用函数之前
+			// 将被调函数放在栈顶的表达式返回值复制到之前保存的栈顶+1的地方
+			topStackItem := vm.Stack[vm.ESP]
+			vm.Stack[callFrame.ESP+1] = topStackItem
+
+			// 函数返回前, 将栈顶设置为调用之前的大小+1
+			// +1是因为函数返中有最后一个表达式的返回值
+			// 如果函数无返回值
+			// 下面的代码也会在栈顶强行插入一个Void类型
+			vm.ESP = callFrame.ESP + 1
 
 			i++
 			hasReturnExpr := code[i]
 			// 如果从函数中没有返回表达式
 			// 则在栈顶放置一个VVoid类型
 			if hasReturnExpr == 0 {
-				vm.ESP++
 				vm.Stack[vm.ESP] = &StackItem{
 					Type: STACK_TEMP,
 					Value: &Value{
@@ -275,7 +304,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 					vm.Vars[argumentVarIdx] = paramValue // 将实参赋值给形参
 				}
 				// 运行GETPARAMS指令前, 实参已经由调用者PUSH到栈上
-				// 在将这些实参复制给形参后, 栈上的实参已经不再使用
+				// 在使用这些实参设置形参后, 栈上的实参已经不再使用
 				// 所以栈要回退到PUSH实参之前
 				// 回退完毕后, 如果是变量赋值, 则栈顶保存的是SETVAR指令放在栈顶的变量
 				vm.ESP--
@@ -286,6 +315,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			i++
 			funcIdx := code[i]
 			embedFunc := Stdlib[funcIdx]
+			fmt.Printf("VM> CALLEMBED %s\n", embedFunc.Name)
 
 			// 从栈中获取实参
 			var funcParams []*Value
