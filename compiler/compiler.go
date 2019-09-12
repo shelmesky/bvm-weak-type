@@ -335,6 +335,7 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			cmpl.AppendCode(runtime.RETURN)
 		}
 
+	// 函数实现
 	case parser.TFunc:
 		nFunc := node.Value.(*parser.NFunc)
 
@@ -402,6 +403,7 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 		cmpl.FuncTable[nFunc.Name] = finfo
 		cmpl.FuncList = append(cmpl.FuncList, finfo)
 
+	// 函数调用
 	case parser.TCallFunc:
 		nFunc := node.Value.(*parser.NCallFunc)
 
@@ -460,6 +462,7 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			cmpl.AppendCode(runtime.CALLFUNC, BCode(idx))
 		}
 
+	// if/elif/else语句
 	case parser.TIf:
 		ends := make([]int, 0, 16)
 		nIf := node.Value.(*parser.NIf)
