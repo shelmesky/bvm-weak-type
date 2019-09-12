@@ -4,6 +4,7 @@ import (
 	"bvm/parser"
 	"bvm/runtime"
 	"fmt"
+	"math"
 )
 
 type BCode uint16
@@ -65,6 +66,8 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 			fmt.Println("Compile>  ASSIGN")
 		case runtime.JMP:
 			fmt.Printf("Compile>  JMP [%d]\n", codes[1])
+		case runtime.JZE:
+			fmt.Printf("Compile>  JNZ [%d]\n", codes[1])
 		case runtime.RETFUNC:
 			fmt.Printf("Compile>  RETFUNC expr:[%d]\n", codes[1])
 		case runtime.RETURN:
@@ -85,6 +88,25 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 
 		case runtime.CALLEMBED:
 			fmt.Printf("Compile>  CALLEMBED %d\n", codes[1])
+
+		case runtime.AND:
+			fmt.Printf("Compile>  AND\n")
+		case runtime.OR:
+			fmt.Printf("Compile>  OR\n")
+		case runtime.EQ:
+			fmt.Printf("Compile>  EQ\n")
+		case runtime.NOTEQ:
+			fmt.Printf("Compile>  NOTEQ\n")
+		case runtime.NOT:
+			fmt.Printf("Compile>  NOT\n")
+		case runtime.LT:
+			fmt.Printf("Compile>  LT\n")
+		case runtime.GT:
+			fmt.Printf("Compile>  GT\n")
+		case runtime.LTE:
+			fmt.Printf("Compile>  LTE\n")
+		case runtime.GTE:
+			fmt.Printf("Compile>  GTE\n")
 		}
 	}
 
@@ -207,6 +229,24 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			cmpl.AppendCode(runtime.DIV)
 		case parser.ASSIGN:
 			cmpl.AppendCode(runtime.ASSIGN)
+		case parser.AND:
+			cmpl.AppendCode(runtime.AND)
+		case parser.OR:
+			cmpl.AppendCode(runtime.OR)
+		case parser.EQ:
+			cmpl.AppendCode(runtime.EQ)
+		case parser.NOT_EQ:
+			cmpl.AppendCode(runtime.NOTEQ)
+		case parser.NOT:
+			cmpl.AppendCode(runtime.NOT)
+		case parser.LT:
+			cmpl.AppendCode(runtime.LT)
+		case parser.GT:
+			cmpl.AppendCode(runtime.GT)
+		case parser.LTE:
+			cmpl.AppendCode(runtime.LTE)
+		case parser.GTE:
+			cmpl.AppendCode(runtime.GTE)
 		}
 
 	// 变量定义
@@ -419,7 +459,95 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			idx := fInfo.Index
 			cmpl.AppendCode(runtime.CALLFUNC, BCode(idx))
 		}
+
+	case parser.TIf:
+		ends := make([]int, 0, 16)
+		nIf := node.Value.(*parser.NIf)
+
+		// 编译if的表达式
+		_, sizeCond, err := cmpl.ConditionCode(nIf.Cond)
+		if err != nil {
+			return err
+		}
+		cmpl.AppendCode(runtime.JZE, 0)
+
+		if nIf.IfBody != nil {
+			// 编译if的代码块
+			if err = nodeToCode(cmpl, nIf.IfBody); err != nil {
+				return err
+			}
+		}
+
+		ends = append(ends, len(cmpl.Code))
+		cmpl.AppendCode(runtime.JMP, 0)
+
+		var off BCode
+		if off, err = cmpl.JumpOff(node, len(cmpl.Code)-sizeCond-2); err != nil {
+			return err
+		}
+		cmpl.Code[sizeCond+1] = off
+
+		// 如果含有多个elif表达式
+		if nIf.ElifBody != nil {
+			nElif := nIf.ElifBody.Value.(*parser.NElif)
+			for _, child := range nElif.List {
+				_, sizeCond, err = cmpl.ConditionCode(child.Cond)
+				if err != nil {
+					return err
+				}
+
+				cmpl.AppendCode(runtime.JZE, 0)
+
+				if err = nodeToCode(cmpl, child.Body); err != nil {
+					return err
+				}
+
+				ends = append(ends, len(cmpl.Code))
+
+				cmpl.AppendCode(runtime.JMP, 0)
+
+				if off, err = cmpl.JumpOff(node, len(cmpl.Code)-sizeCond-2); err != nil {
+					return err
+				}
+
+				cmpl.Code[sizeCond+1] = off
+			}
+		}
+
+		// 如果含有else语句
+		if nIf.ElseBody != nil {
+			if err = nodeToCode(cmpl, nIf.ElseBody); err != nil {
+				return err
+			}
+		}
+
+		size := len(cmpl.Code)
+		for _, end := range ends {
+			if off, err = cmpl.JumpOff(node, size-end); err != nil {
+				return err
+			}
+
+			cmpl.Code[end+1] = off
+		}
 	}
 
 	return nil
+}
+
+func (this *CompileEnv) ConditionCode(node *parser.Node) (before, after int, err error) {
+	before = len(this.Code)
+	if err = nodeToCode(this, node); err != nil {
+		return
+	}
+
+	after = len(this.Code)
+	return
+}
+
+func (this *CompileEnv) JumpOff(node *parser.Node, off int) (BCode, error) {
+	if off < math.MinInt16 || off > math.MaxInt16 {
+		return runtime.NOP, fmt.Errorf("Too big relative jump\n")
+	}
+
+	return BCode(off), nil
 }

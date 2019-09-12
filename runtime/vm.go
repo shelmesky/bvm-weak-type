@@ -65,17 +65,13 @@ type VM struct {
 }
 
 func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, varTableSize int) error {
-	var (
-		valueA *Value
-		valueB *Value
-	)
 	calls := make([]CallFrame, 1000)
 	var coff int64
 
 	vm := VM{
 		Constants: make([]*Value, 0),
 		Vars:      make([]*Value, 0),
-		Stack:     make([]*StackItem, 10, 1024),
+		Stack:     make([]*StackItem, 16),
 		ESP:       0,
 		EBP:       0,
 	}
@@ -155,8 +151,8 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			stackItemA := vm.Stack[vm.ESP-1]
 			stackItemB := vm.Stack[vm.ESP]
 
-			valueA = getValueFromStack(vm, stackItemA)
-			valueB = getValueFromStack(vm, stackItemB)
+			valueA := getValueFromStack(vm, stackItemA)
+			valueB := getValueFromStack(vm, stackItemB)
 
 			if err := checkValue(valueA); err != nil {
 				return err
@@ -184,8 +180,8 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			stackItemA := vm.Stack[vm.ESP-1]
 			stackItemB := vm.Stack[vm.ESP]
 
-			valueA = getValueFromStack(vm, stackItemA)
-			valueB = getValueFromStack(vm, stackItemB)
+			valueA := getValueFromStack(vm, stackItemA)
+			valueB := getValueFromStack(vm, stackItemB)
 
 			if err := checkValue(valueA); err != nil {
 				return err
@@ -215,7 +211,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 
 			// 如果被赋值的类型是VAR_POINTER
 			if stackItemA.Type == VAR_POINTER {
-				valueB = getValueFromStack(vm, stackItemB)
+				valueB := getValueFromStack(vm, stackItemB)
 
 				if err := checkValue(valueB); err != nil {
 					return err
@@ -236,6 +232,26 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			dest := int64(int16(code[i+1]))
 			i += dest
 			fmt.Printf("VM> JMP %d\n", i)
+
+		case JZE:
+			i++
+			offset := code[i]
+			// 这里栈顶-1是因为JZE指令获取栈顶的值后
+			// 这个值不再被后续的指令需要, 需要弹出栈
+			vm.ESP--
+
+			topStackItem := vm.Stack[vm.ESP+1]
+			value := getValueFromStack(vm, topStackItem)
+			if value.Type != parser.VBool {
+				panic("JZE need VBool type")
+			}
+
+			// 如果逻辑或关系运算符的结果为true
+			if value.Value.(bool) == false {
+				i += int64(offset)
+			}
+
+			fmt.Printf("VM> JZE %d\n", offset)
 
 		case CALLFUNC:
 			var callFrame CallFrame
@@ -366,6 +382,95 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 				vm.ESP++
 				vm.Stack[vm.ESP] = stackItem
 			}
+
+		case AND:
+			fmt.Printf("VM> AND\n")
+		case OR:
+			fmt.Printf("VM> OR\n")
+		case EQ:
+			fmt.Printf("VM> EQ\n")
+		case NOTEQ:
+			fmt.Printf("VM> NOTEQ\n")
+		case NOT:
+			fmt.Printf("VM> NOT\n")
+		case LT:
+			vm.ESP--
+			stackItemA := vm.Stack[vm.ESP]
+			stackItemB := vm.Stack[vm.ESP+1]
+
+			valueA := getValueFromStack(vm, stackItemA)
+			valueB := getValueFromStack(vm, stackItemB)
+
+			if err := checkValue(valueA); err != nil {
+				return err
+			}
+			if err := checkValue(valueB); err != nil {
+				return err
+			}
+
+			var stackItem *StackItem
+
+			if valueA.Value.(int64) < valueB.Value.(int64) {
+				stackItem = &StackItem{
+					Type: STACK_TEMP,
+					Value: &Value{
+						Type:  parser.VBool,
+						Value: true,
+					},
+				}
+			} else {
+				stackItem = &StackItem{
+					Type: STACK_TEMP,
+					Value: &Value{
+						Type:  parser.VBool,
+						Value: false,
+					},
+				}
+			}
+			vm.Stack[vm.ESP] = stackItem
+
+			fmt.Printf("VM> LT\n")
+		case GT:
+			vm.ESP--
+			stackItemA := vm.Stack[vm.ESP]
+			stackItemB := vm.Stack[vm.ESP+1]
+
+			valueA := getValueFromStack(vm, stackItemA)
+			valueB := getValueFromStack(vm, stackItemB)
+
+			if err := checkValue(valueA); err != nil {
+				return err
+			}
+			if err := checkValue(valueB); err != nil {
+				return err
+			}
+
+			var stackItem *StackItem
+
+			if valueA.Value.(int64) > valueB.Value.(int64) {
+				stackItem = &StackItem{
+					Type: STACK_TEMP,
+					Value: &Value{
+						Type:  parser.VBool,
+						Value: true,
+					},
+				}
+			} else {
+				stackItem = &StackItem{
+					Type: STACK_TEMP,
+					Value: &Value{
+						Type:  parser.VBool,
+						Value: false,
+					},
+				}
+			}
+			vm.Stack[vm.ESP] = stackItem
+
+			fmt.Printf("VM> GT\n")
+		case LTE:
+			fmt.Printf("VM> LTE\n")
+		case GTE:
+			fmt.Printf("VM> GTE\n")
 
 		default:
 			return fmt.Errorf("VM> unknown command %d\n", code[i])
