@@ -10,7 +10,6 @@
 
 ```go
 contract mycnt {
-
     func myfunc0(b) {
         var x = b
         return x
@@ -23,6 +22,20 @@ contract mycnt {
 
     var y = myfunc1(111, 222)
     println(y)
+
+    var m = 111
+    var n = 222
+
+    if m > n {
+        var i = 555
+        println(i)
+    } elif m < n {
+        var j = 666
+        println(j)
+    } else {
+        var l = 777
+        println(l)
+    }
 }
 ```
 
