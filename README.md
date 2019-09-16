@@ -36,6 +36,9 @@ contract mycnt {
         var l = 777
         println(l)
     }
+    
+     var t = (1+2)*3
+     println(t)
 }
 ```
 
