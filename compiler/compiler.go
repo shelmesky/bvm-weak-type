@@ -67,7 +67,7 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 		case runtime.JMP:
 			fmt.Printf("Compile>  JMP [%d]\n", codes[1])
 		case runtime.JZE:
-			fmt.Printf("Compile>  JNZ [%d]\n", codes[1])
+			fmt.Printf("Compile>  JZE [%d]\n", codes[1])
 		case runtime.RETFUNC:
 			fmt.Printf("Compile>  RETFUNC expr:[%d]\n", codes[1])
 		case runtime.RETURN:
@@ -526,7 +526,7 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 
 		size := len(cmpl.Code)
 		for _, end := range ends {
-			if off, err = cmpl.JumpOff(node, size-end); err != nil {
+			if off, err = cmpl.JumpOff(node, size-end-1); err != nil {
 				return err
 			}
 

@@ -7,6 +7,10 @@ import (
 	"unsafe"
 )
 
+const (
+	StackSize = 32
+)
+
 type BCode uint16
 
 // 栈元素的类型
@@ -71,7 +75,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 	vm := VM{
 		Constants: make([]*Value, 0),
 		Vars:      make([]*Value, 0),
-		Stack:     make([]*StackItem, 16),
+		Stack:     make([]*StackItem, StackSize),
 		ESP:       0,
 		EBP:       0,
 	}
@@ -202,7 +206,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 					},
 				}
 			}
-			fmt.Printf("VM> MUL")
+			fmt.Printf("VM> MUL\n")
 
 		// 赋值操作符
 		case ASSIGN:
