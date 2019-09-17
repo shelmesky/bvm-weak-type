@@ -30,7 +30,7 @@ func GetEmbedFunc(name string) (*EmbedFunc, error) {
 	return embedFunc, fmt.Errorf("Can not find embed function %s\n", name)
 }
 
-func Println(vm VM, value *Value) int {
+func Println(vm *VM, value *Value) int {
 	fmt.Printf("%v\n", value.Value)
 	return 0
 }

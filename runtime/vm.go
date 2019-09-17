@@ -72,7 +72,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 	calls := make([]CallFrame, 1000)
 	var coff int64
 
-	vm := VM{
+	vm := &VM{
 		Constants: make([]*Value, 0),
 		Vars:      make([]*Value, 0),
 		Stack:     make([]*StackItem, StackSize),
@@ -151,62 +151,14 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			fmt.Printf("VM> GETVAR %d\n", code[i])
 
 		case ADD:
-			// 从stack获取栈顶的2个元素
-			stackItemA := vm.Stack[vm.ESP-1]
-			stackItemB := vm.Stack[vm.ESP]
-
-			valueA := getValueFromStack(vm, stackItemA)
-			valueB := getValueFromStack(vm, stackItemB)
-
-			if err := checkValue(valueA); err != nil {
+			if err := Add(vm); err != nil {
 				return err
 			}
-
-			if err := checkValue(valueB); err != nil {
-				return err
-			}
-
-			if valueA.Type == parser.VInt && valueB.Type == parser.VInt {
-				result := valueA.Value.(int64) + valueB.Value.(int64)
-				vm.ESP--
-				vm.Stack[vm.ESP] = &StackItem{
-					Type: STACK_TEMP,
-					Value: &Value{
-						Type:  parser.VInt,
-						Value: result,
-					},
-				}
-			}
-			fmt.Printf("VM> ADD\n")
 
 		case MUL:
-			// 从stack获取栈顶的2个元素
-			stackItemA := vm.Stack[vm.ESP-1]
-			stackItemB := vm.Stack[vm.ESP]
-
-			valueA := getValueFromStack(vm, stackItemA)
-			valueB := getValueFromStack(vm, stackItemB)
-
-			if err := checkValue(valueA); err != nil {
+			if err := Mul(vm); err != nil {
 				return err
 			}
-
-			if err := checkValue(valueB); err != nil {
-				return err
-			}
-
-			if valueA.Type == parser.VInt && valueB.Type == parser.VInt {
-				result := valueA.Value.(int64) * valueB.Value.(int64)
-				vm.ESP--
-				vm.Stack[vm.ESP] = &StackItem{
-					Type: STACK_TEMP,
-					Value: &Value{
-						Type:  parser.VInt,
-						Value: result,
-					},
-				}
-			}
-			fmt.Printf("VM> MUL\n")
 
 		// 赋值操作符
 		case ASSIGN:
@@ -215,9 +167,9 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 
 			// 如果被赋值的类型是VAR_POINTER
 			if stackItemA.Type == VAR_POINTER {
-				valueB := getValueFromStack(vm, stackItemB)
+				valueB := GetValueFromStack(vm, stackItemB)
 
-				if err := checkValue(valueB); err != nil {
+				if err := CheckValue(valueB); err != nil {
 					return err
 				}
 
@@ -245,7 +197,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			vm.ESP--
 
 			topStackItem := vm.Stack[vm.ESP+1]
-			value := getValueFromStack(vm, topStackItem)
+			value := GetValueFromStack(vm, topStackItem)
 			if value.Type != parser.VBool {
 				panic("JZE need VBool type")
 			}
@@ -317,7 +269,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			var paramValue *Value // 实参
 			for j := 0; j <= int(paramCount)-1; j++ {
 				paramItem := vm.Stack[vm.ESP]                 // 实参在stack中的元素
-				paramValue = getValueFromStack(vm, paramItem) //  根据栈元素类型获取Value
+				paramValue = GetValueFromStack(vm, paramItem) //  根据栈元素类型获取Value
 				i++
 				argumentVarIdx := int64(code[i]) // 形参在VM变量内存中的索引
 				if paramValue != nil {
@@ -341,7 +293,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			var funcParams []*Value
 			for j := 0; j <= embedFunc.ParamNum-1; j++ {
 				stackItem := vm.Stack[vm.ESP-j]
-				paramValue := getValueFromStack(vm, stackItem)
+				paramValue := GetValueFromStack(vm, stackItem)
 				funcParams = append(funcParams, paramValue)
 			}
 
@@ -397,80 +349,17 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			fmt.Printf("VM> NOTEQ\n")
 		case NOT:
 			fmt.Printf("VM> NOT\n")
+
 		case LT:
-			vm.ESP--
-			stackItemA := vm.Stack[vm.ESP]
-			stackItemB := vm.Stack[vm.ESP+1]
-
-			valueA := getValueFromStack(vm, stackItemA)
-			valueB := getValueFromStack(vm, stackItemB)
-
-			if err := checkValue(valueA); err != nil {
-				return err
-			}
-			if err := checkValue(valueB); err != nil {
+			if err := Lt(vm); err != nil {
 				return err
 			}
 
-			var stackItem *StackItem
-
-			if valueA.Value.(int64) < valueB.Value.(int64) {
-				stackItem = &StackItem{
-					Type: STACK_TEMP,
-					Value: &Value{
-						Type:  parser.VBool,
-						Value: true,
-					},
-				}
-			} else {
-				stackItem = &StackItem{
-					Type: STACK_TEMP,
-					Value: &Value{
-						Type:  parser.VBool,
-						Value: false,
-					},
-				}
-			}
-			vm.Stack[vm.ESP] = stackItem
-
-			fmt.Printf("VM> LT\n")
 		case GT:
-			vm.ESP--
-			stackItemA := vm.Stack[vm.ESP]
-			stackItemB := vm.Stack[vm.ESP+1]
-
-			valueA := getValueFromStack(vm, stackItemA)
-			valueB := getValueFromStack(vm, stackItemB)
-
-			if err := checkValue(valueA); err != nil {
-				return err
-			}
-			if err := checkValue(valueB); err != nil {
+			if err := Gt(vm); err != nil {
 				return err
 			}
 
-			var stackItem *StackItem
-
-			if valueA.Value.(int64) > valueB.Value.(int64) {
-				stackItem = &StackItem{
-					Type: STACK_TEMP,
-					Value: &Value{
-						Type:  parser.VBool,
-						Value: true,
-					},
-				}
-			} else {
-				stackItem = &StackItem{
-					Type: STACK_TEMP,
-					Value: &Value{
-						Type:  parser.VBool,
-						Value: false,
-					},
-				}
-			}
-			vm.Stack[vm.ESP] = stackItem
-
-			fmt.Printf("VM> GT\n")
 		case LTE:
 			fmt.Printf("VM> LTE\n")
 		case GTE:
@@ -487,7 +376,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 }
 
 // 根据栈元素的类型, 在常量表/变量表/栈元素本身中获取Value类型
-func getValueFromStack(vm VM, stackItem *StackItem) *Value {
+func GetValueFromStack(vm *VM, stackItem *StackItem) *Value {
 	var value *Value
 
 	if stackItem.Type == CONST_IDX {
@@ -507,7 +396,7 @@ func getValueFromStack(vm VM, stackItem *StackItem) *Value {
 	return value
 }
 
-func checkValue(value *Value) error {
+func CheckValue(value *Value) error {
 	if value.Type == parser.VVoid {
 		return fmt.Errorf("Void type is not allowed\n")
 	}
