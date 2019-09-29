@@ -32,6 +32,11 @@ type Variable struct {
 	IsGlobal bool
 }
 
+type Jumps struct {
+	Breaks    []int
+	Continues []int
+}
+
 // 编译环境
 type CompileEnv struct {
 	VarTable       map[string]Variable // 变量表
@@ -40,6 +45,7 @@ type CompileEnv struct {
 	ConstantsTable []Const             // 常量表
 	Code           []BCode             // 字节码
 	InFunc         bool                // 是否正在编译函数
+	Jumps          []*Jumps
 }
 
 func (this *CompileEnv) AppendCode(codes ...BCode) {
@@ -532,6 +538,76 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 
 			cmpl.Code[end+1] = off
 		}
+
+	case parser.TWhile:
+		nWhile := node.Value.(*parser.NWhile)
+		cmpl.Jumps = append(cmpl.Jumps, &Jumps{})
+		// 处理while的条件表达式
+		// sizeCode为条件代码结束的位置, sizeCond为条件代码开始的位置
+		sizeCode, sizeCond, err := cmpl.ConditionCode(nWhile.Cond)
+		if err != nil {
+			return err
+		}
+
+		// 紧跟着条件表达式插入JZE指令
+		cmpl.AppendCode(runtime.JZE, 0)
+
+		// 编译while的主体代码
+		if err = nodeToCode(cmpl, nWhile.Body); err != nil {
+			return err
+		}
+
+		// 循环处理Body中出现的continue语句
+		// 给continue关键字生成的JMP指令设置为条件语句开始的地方
+		for _, b := range cmpl.Jumps[len(cmpl.Jumps)-1].Continues {
+			cmpl.Code[b] = BCode(sizeCode - b + 1)
+		}
+
+		// while中一次循环运行完毕, 跳转到条件表达式开始的地方
+		var off BCode
+		a := len(cmpl.Code)
+		fmt.Println(a)
+		if off, err = cmpl.JumpOff(node, sizeCode-len(cmpl.Code)); err != nil {
+			return err
+		}
+		cmpl.AppendCode(runtime.JMP, off)
+
+		// 设置进跟着条件表达式的JZE指令参数
+		// 如果JZE检查出条件为false, 则直接跳到while语句结束的地方运行
+		if off, err = cmpl.JumpOff(node, len(cmpl.Code)-sizeCond); err != nil {
+			return err
+		}
+		cmpl.Code[sizeCond+1] = off
+
+		// 设置代码中出现的break关键字的跳转位置为代码结束处
+		for _, b := range cmpl.Jumps[len(cmpl.Jumps)-1].Breaks {
+			cmpl.Code[b] = BCode(len(cmpl.Code) - b + 1)
+		}
+
+		cmpl.Jumps = cmpl.Jumps[:len(cmpl.Jumps)-1]
+
+	case parser.TBreak:
+		if len(cmpl.Jumps) == 0 {
+			return fmt.Errorf("break must be inside of while or for")
+		}
+
+		// 生成JMP指令
+		// 使用Jump.Breaks记录当前的位置
+		// while中会给这里生成的JMP指令设置真正需要跳转的位置
+		cmpl.AppendCode(runtime.JMP, 0)
+		cmpl.Jumps[len(cmpl.Jumps)-1].Breaks = append(cmpl.Jumps[len(cmpl.Jumps)-1].Breaks,
+			len(cmpl.Code)-1)
+
+	case parser.TContinue:
+		if len(cmpl.Jumps) == 0 {
+			return fmt.Errorf("continue must be inside of while or for")
+		}
+
+		// 生成JMP指令
+		// 使用Jump.Continues记录当前的代码位置
+		cmpl.AppendCode(runtime.JMP, 0)
+		cmpl.Jumps[len(cmpl.Jumps)-1].Continues = append(cmpl.Jumps[len(cmpl.Jumps)-1].Continues,
+			len(cmpl.Code)-1)
 	}
 
 	return nil
