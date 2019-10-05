@@ -401,7 +401,7 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 		}
 
 		// 跳出函数定义
-		funcEnd := int64(len(cmpl.Code)) - 1 - start
+		funcEnd := int64(len(cmpl.Code))
 		cmpl.Code[start+1] = BCode(funcEnd)
 
 		// 在函数表中保存
@@ -491,7 +491,7 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 		cmpl.AppendCode(runtime.JMP, 0)
 
 		var off BCode
-		if off, err = cmpl.JumpOff(node, len(cmpl.Code)-sizeCond-2); err != nil {
+		if off, err = cmpl.JumpOff(node, len(cmpl.Code)); err != nil {
 			return err
 		}
 		cmpl.Code[sizeCond+1] = off
@@ -515,7 +515,7 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 
 				cmpl.AppendCode(runtime.JMP, 0)
 
-				if off, err = cmpl.JumpOff(node, len(cmpl.Code)-sizeCond-2); err != nil {
+				if off, err = cmpl.JumpOff(node, len(cmpl.Code)); err != nil {
 					return err
 				}
 
@@ -532,7 +532,7 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 
 		size := len(cmpl.Code)
 		for _, end := range ends {
-			if off, err = cmpl.JumpOff(node, size-end-1); err != nil {
+			if off, err = cmpl.JumpOff(node, size); err != nil {
 				return err
 			}
 

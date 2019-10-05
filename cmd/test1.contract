@@ -16,13 +16,13 @@ contract mycnt {
     var n = 222
 
     if m > n {
-        var i = 555
+        var i = 555555
         println(i)
     } elif m < n {
-        var j = 666
+        var j = 666666
         println(j)
     } else {
-        var l = 777
+        var l = 777777
         println(l)
     }
 
