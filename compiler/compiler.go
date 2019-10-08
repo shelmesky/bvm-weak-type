@@ -70,6 +70,8 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 			fmt.Println("Compile>  DIV")
 		case runtime.ASSIGN:
 			fmt.Println("Compile>  ASSIGN")
+		case runtime.LOOP:
+			fmt.Println("Compile>  LOOP")
 		case runtime.JMP:
 			fmt.Printf("Compile>  JMP [%d]\n", codes[1])
 		case runtime.JZE:
@@ -541,6 +543,9 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 
 	case parser.TWhile:
 		nWhile := node.Value.(*parser.NWhile)
+
+		cmpl.AppendCode(runtime.LOOP)
+
 		cmpl.Jumps = append(cmpl.Jumps, &Jumps{})
 		// 处理while的条件表达式
 		// sizeCode为条件代码结束的位置, sizeCond为条件代码开始的位置
@@ -565,7 +570,7 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 
 		// while中一次循环运行完毕, 跳转到条件表达式开始的地方
 		var off BCode
-		if off, err = cmpl.JumpOff(node, sizeCode); err != nil {
+		if off, err = cmpl.JumpOff(node, sizeCode-1); err != nil {
 			return err
 		}
 		cmpl.AppendCode(runtime.JMP, off)

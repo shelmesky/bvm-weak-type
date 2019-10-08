@@ -71,6 +71,7 @@ type VM struct {
 func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, varTableSize int) error {
 	calls := make([]CallFrame, 1000)
 	var coff int64
+	var loopStack int
 
 	vm := &VM{
 		Constants: make([]*Value, 0),
@@ -184,9 +185,19 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			}
 			fmt.Printf("VM> ASSIGN\n")
 
+		case LOOP:
+			fmt.Println("VM> LOOP")
+			// 循环开始前记录栈的大小
+			loopStack = vm.ESP
+
 		case JMP:
 			dest := int64(int16(code[i+1]))
 			i = dest
+			// 跳转前检查
+			if loopStack >= 0 {
+				vm.ESP = loopStack
+				loopStack = -1
+			}
 			fmt.Printf("VM> JMP %d\n", i)
 			continue
 

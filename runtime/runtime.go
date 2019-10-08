@@ -11,6 +11,7 @@ const (
 	MUL       // *
 	DIV       // /
 	ASSIGN    // =
+	LOOP      // loop start
 	JMP       // jump to offset
 	JZE       // jump if stack top is zero
 	RETFUNC   // return from function

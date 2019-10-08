@@ -1,5 +1,5 @@
 contract mycnt {
-    while (1>2) {
+    while (1<2) {
         println(111111)
     }
     println(222222)
