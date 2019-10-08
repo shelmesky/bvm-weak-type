@@ -560,28 +560,26 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 		// 循环处理Body中出现的continue语句
 		// 给continue关键字生成的JMP指令设置为条件语句开始的地方
 		for _, b := range cmpl.Jumps[len(cmpl.Jumps)-1].Continues {
-			cmpl.Code[b] = BCode(sizeCode - b + 1)
+			cmpl.Code[b] = BCode(sizeCode)
 		}
 
 		// while中一次循环运行完毕, 跳转到条件表达式开始的地方
 		var off BCode
-		a := len(cmpl.Code)
-		fmt.Println(a)
-		if off, err = cmpl.JumpOff(node, sizeCode-len(cmpl.Code)); err != nil {
+		if off, err = cmpl.JumpOff(node, sizeCode); err != nil {
 			return err
 		}
 		cmpl.AppendCode(runtime.JMP, off)
 
-		// 设置进跟着条件表达式的JZE指令参数
+		// 设置紧跟着条件表达式的JZE指令参数
 		// 如果JZE检查出条件为false, 则直接跳到while语句结束的地方运行
-		if off, err = cmpl.JumpOff(node, len(cmpl.Code)-sizeCond); err != nil {
+		if off, err = cmpl.JumpOff(node, len(cmpl.Code)); err != nil {
 			return err
 		}
 		cmpl.Code[sizeCond+1] = off
 
 		// 设置代码中出现的break关键字的跳转位置为代码结束处
 		for _, b := range cmpl.Jumps[len(cmpl.Jumps)-1].Breaks {
-			cmpl.Code[b] = BCode(len(cmpl.Code) - b + 1)
+			cmpl.Code[b] = BCode(len(cmpl.Code))
 		}
 
 		cmpl.Jumps = cmpl.Jumps[:len(cmpl.Jumps)-1]
