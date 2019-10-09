@@ -3,6 +3,7 @@ package compiler
 import (
 	"bvm/parser"
 	"bvm/runtime"
+	"bvm/utils"
 	"fmt"
 	"math"
 )
@@ -53,68 +54,68 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 	if len(codes) > 0 {
 		switch codes[0] {
 		case runtime.PUSH:
-			fmt.Printf("Compile>  PUSH index:[%d]\n", codes[1])
+			utils.DebugPrintf("Compile>  PUSH index:[%d]\n", codes[1])
 		case runtime.INITVARS:
-			fmt.Println("Compile>  INITVARS")
+			utils.DebugPrintf("Compile>  INITVARS")
 		case runtime.GETVAR:
-			fmt.Printf("Compile>  GETVAR index:[%d]\n", codes[1])
+			utils.DebugPrintf("Compile>  GETVAR index:[%d]\n", codes[1])
 		case runtime.SETVAR:
-			fmt.Printf("Compile>  SETVAR index:[%d]\n", codes[1])
+			utils.DebugPrintf("Compile>  SETVAR index:[%d]\n", codes[1])
 		case runtime.ADD:
-			fmt.Println("Compile>  ADD")
+			utils.DebugPrintln("Compile>  ADD")
 		case runtime.SUB:
-			fmt.Println("Compile>  UB")
+			utils.DebugPrintln("Compile>  UB")
 		case runtime.MUL:
-			fmt.Println("Compile>  MUL")
+			utils.DebugPrintln("Compile>  MUL")
 		case runtime.DIV:
-			fmt.Println("Compile>  DIV")
+			utils.DebugPrintln("Compile>  DIV")
 		case runtime.ASSIGN:
-			fmt.Println("Compile>  ASSIGN")
+			utils.DebugPrintln("Compile>  ASSIGN")
 		case runtime.LOOP:
-			fmt.Println("Compile>  LOOP")
+			utils.DebugPrintln("Compile>  LOOP")
 		case runtime.JMP:
-			fmt.Printf("Compile>  JMP [%d]\n", codes[1])
+			utils.DebugPrintf("Compile>  JMP [%d]\n", codes[1])
 		case runtime.JZE:
-			fmt.Printf("Compile>  JZE [%d]\n", codes[1])
+			utils.DebugPrintf("Compile>  JZE [%d]\n", codes[1])
 		case runtime.RETFUNC:
-			fmt.Printf("Compile>  RETFUNC expr:[%d]\n", codes[1])
+			utils.DebugPrintf("Compile>  RETFUNC expr:[%d]\n", codes[1])
 		case runtime.RETURN:
-			fmt.Println("Compile>  RETURN")
+			utils.DebugPrintln("Compile>  RETURN")
 		case runtime.CALLFUNC:
-			fmt.Printf("Compile>  CALLFUNC offset:[%d]\n", codes[1])
+			utils.DebugPrintf("Compile>  CALLFUNC offset:[%d]\n", codes[1])
 		case runtime.GETPARAMS:
-			fmt.Printf("Compile>  GETPARAMS count:[%d] ", codes[1])
+			utils.DebugPrintf("Compile>  GETPARAMS count:[%d] ", codes[1])
 			varIdxList := codes[2:]
 			if len(varIdxList) > 0 {
-				fmt.Printf("varIdxList:[ ")
+				utils.DebugPrintf("varIdxList:[ ")
 				for i := 0; i < len(varIdxList); i++ {
-					fmt.Printf("%d ", varIdxList[i])
+					utils.DebugPrintf("%d ", varIdxList[i])
 				}
-				fmt.Printf("]")
+				utils.DebugPrintf("]")
 			}
-			fmt.Printf("\n")
+			utils.DebugPrintf("\n")
 
 		case runtime.CALLEMBED:
-			fmt.Printf("Compile>  CALLEMBED %d\n", codes[1])
+			utils.DebugPrintf("Compile>  CALLEMBED %d\n", codes[1])
 
 		case runtime.AND:
-			fmt.Printf("Compile>  AND\n")
+			utils.DebugPrintf("Compile>  AND\n")
 		case runtime.OR:
-			fmt.Printf("Compile>  OR\n")
+			utils.DebugPrintf("Compile>  OR\n")
 		case runtime.EQ:
-			fmt.Printf("Compile>  EQ\n")
+			utils.DebugPrintf("Compile>  EQ\n")
 		case runtime.NOTEQ:
-			fmt.Printf("Compile>  NOTEQ\n")
+			utils.DebugPrintf("Compile>  NOTEQ\n")
 		case runtime.NOT:
-			fmt.Printf("Compile>  NOT\n")
+			utils.DebugPrintf("Compile>  NOT\n")
 		case runtime.LT:
-			fmt.Printf("Compile>  LT\n")
+			utils.DebugPrintf("Compile>  LT\n")
 		case runtime.GT:
-			fmt.Printf("Compile>  GT\n")
+			utils.DebugPrintf("Compile>  GT\n")
 		case runtime.LTE:
-			fmt.Printf("Compile>  LTE\n")
+			utils.DebugPrintf("Compile>  LTE\n")
 		case runtime.GTE:
-			fmt.Printf("Compile>  GTE\n")
+			utils.DebugPrintf("Compile>  GTE\n")
 		}
 	}
 
