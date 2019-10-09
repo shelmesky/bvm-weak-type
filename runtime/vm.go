@@ -217,6 +217,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			// 如果逻辑或关系运算符的结果为true
 			if value.Value.(bool) == false {
 				i = int64(offset)
+				fmt.Printf("VM> JZE %d\n", offset)
 				continue
 			}
 

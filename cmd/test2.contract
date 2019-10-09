@@ -1,6 +1,8 @@
 contract mycnt {
-    while (1<2) {
-        println(111111)
+    var a = 1
+    while (a<10) {
+        a = a + 1
+        println(a)
     }
     println(222222)
 }
