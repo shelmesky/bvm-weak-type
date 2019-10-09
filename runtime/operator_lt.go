@@ -1,7 +1,9 @@
 package runtime
 
-import "bvm/parser"
-import "fmt"
+import (
+	"bvm/parser"
+	"bvm/utils"
+)
 
 func Lt(vm *VM) error {
 	vm.ESP--
@@ -39,7 +41,7 @@ func Lt(vm *VM) error {
 	}
 	vm.Stack[vm.ESP] = stackItem
 
-	fmt.Printf("VM> LT\n")
+	utils.DebugPrintf("VM> LT\n")
 
 	return nil
 }

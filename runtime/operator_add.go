@@ -1,7 +1,9 @@
 package runtime
 
-import "bvm/parser"
-import "fmt"
+import (
+	"bvm/parser"
+	"bvm/utils"
+)
 
 func Add(vm *VM) error {
 	// 从stack获取栈顶的2个元素
@@ -30,7 +32,7 @@ func Add(vm *VM) error {
 			},
 		}
 	}
-	fmt.Printf("VM> ADD\n")
+	utils.DebugPrintf("VM> ADD\n")
 
 	return nil
 }

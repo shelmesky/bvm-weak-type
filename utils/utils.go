@@ -1,7 +1,15 @@
 package utils
 
-import "bvm/compiler"
+import (
+	"fmt"
+)
 
-func GetContant(code compiler.BCode) compiler.Const {
+const (
+	Debug = false
+)
 
+func DebugPrintf(format string, a ...interface{}) {
+	if Debug == true {
+		fmt.Printf(format, a...)
+	}
 }

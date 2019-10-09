@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"bvm/parser"
+	"bvm/utils"
 	"fmt"
 	"reflect"
 	"unsafe"
@@ -123,14 +124,14 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 				Value: idx,
 			}
 			vm.Stack[vm.ESP] = &stackItem
-			fmt.Printf("VM> PUSH %d\n", code[i])
+			utils.DebugPrintf("VM> PUSH %d\n", code[i])
 
 		case SETVAR:
 			i++
 			vm.ESP++
 			// 根据SETVAR的操作数获取变量的索引
 			varIndex := code[i]
-			fmt.Printf("VM> SETVAR %d\n", code[i])
+			utils.DebugPrintf("VM> SETVAR %d\n", code[i])
 			// 获取索引在vm.Vars中的指针
 			varPointer := int64(uintptr(unsafe.Pointer(&vm.Vars[varIndex])))
 			// 保存指针到stack元素
@@ -149,7 +150,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 				Value: varIndex,
 			}
 			vm.Stack[vm.ESP] = &stackItem
-			fmt.Printf("VM> GETVAR %d\n", code[i])
+			utils.DebugPrintf("VM> GETVAR %d\n", code[i])
 
 		case ADD:
 			if err := Add(vm); err != nil {
@@ -183,10 +184,10 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 				*(*int64)(unsafe.Pointer(uintptr(stackItemA.Value.(int64)))) =
 					int64(uintptr(unsafe.Pointer(&value)))
 			}
-			fmt.Printf("VM> ASSIGN\n")
+			utils.DebugPrintf("VM> ASSIGN\n")
 
 		case LOOP:
-			fmt.Println("VM> LOOP")
+			utils.DebugPrintf("VM> LOOP\n")
 			// 循环开始前记录栈的大小
 			loopStack = vm.ESP
 
@@ -198,7 +199,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 				vm.ESP = loopStack
 				loopStack = -1
 			}
-			fmt.Printf("VM> JMP %d\n", i)
+			utils.DebugPrintf("VM> JMP %d\n", i)
 			continue
 
 		case JZE:
@@ -217,11 +218,11 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			// 如果逻辑或关系运算符的结果为true
 			if value.Value.(bool) == false {
 				i = int64(offset)
-				fmt.Printf("VM> JZE %d\n", offset)
+				utils.DebugPrintf("VM> JZE %d\n", offset)
 				continue
 			}
 
-			fmt.Printf("VM> JZE %d\n", offset)
+			utils.DebugPrintf("VM> JZE %d\n", offset)
 
 		case CALLFUNC:
 			var callFrame CallFrame
@@ -241,7 +242,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 
 			offset := fInfo.Offset
 			i = offset
-			fmt.Printf("VM> CALLFUNC  dest: %d  origin: %d\n", i, calls[coff-1])
+			utils.DebugPrintf("VM> CALLFUNC  dest: %d  origin: %d\n", i, calls[coff-1])
 			continue
 
 		case RETFUNC:
@@ -274,7 +275,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 				}
 			}
 			i = callFrame.ReturnAddress // 从函数返回，恢复指令指针
-			fmt.Printf("VM> RETRUNC %d\n", i)
+			utils.DebugPrintf("VM> RETRUNC %d\n", i)
 			continue
 
 		case GETPARAMS:
@@ -295,13 +296,13 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 				// 回退完毕后, 如果是变量赋值, 则栈顶保存的是SETVAR指令放在栈顶的变量
 				vm.ESP--
 			}
-			fmt.Printf("VM> GETPARAMS %d\n", paramCount)
+			utils.DebugPrintf("VM> GETPARAMS %d\n", paramCount)
 
 		case CALLEMBED:
 			i++
 			funcIdx := code[i]
 			embedFunc := Stdlib[funcIdx]
-			fmt.Printf("VM> CALLEMBED %s\n", embedFunc.Name)
+			utils.DebugPrintf("VM> CALLEMBED %s\n", embedFunc.Name)
 
 			// 从栈中获取实参
 			var funcParams []*Value
@@ -354,15 +355,15 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			}
 
 		case AND:
-			fmt.Printf("VM> AND\n")
+			utils.DebugPrintf("VM> AND\n")
 		case OR:
-			fmt.Printf("VM> OR\n")
+			utils.DebugPrintf("VM> OR\n")
 		case EQ:
-			fmt.Printf("VM> EQ\n")
+			utils.DebugPrintf("VM> EQ\n")
 		case NOTEQ:
-			fmt.Printf("VM> NOTEQ\n")
+			utils.DebugPrintf("VM> NOTEQ\n")
 		case NOT:
-			fmt.Printf("VM> NOT\n")
+			utils.DebugPrintf("VM> NOT\n")
 
 		case LT:
 			if err := Lt(vm); err != nil {
@@ -375,9 +376,9 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			}
 
 		case LTE:
-			fmt.Printf("VM> LTE\n")
+			utils.DebugPrintf("VM> LTE\n")
 		case GTE:
-			fmt.Printf("VM> GTE\n")
+			utils.DebugPrintf("VM> GTE\n")
 
 		default:
 			return fmt.Errorf("VM> unknown command %d\n", code[i])
