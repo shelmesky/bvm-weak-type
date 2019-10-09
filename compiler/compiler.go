@@ -70,7 +70,7 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 		case runtime.DIV:
 			utils.DebugPrintln("Compile>  DIV")
 		case runtime.ASSIGN:
-			utils.DebugPrintln("Compile>  ASSIGN")
+			utils.DebugPrintf("Compile>  ASSIGN\n")
 		case runtime.LOOP:
 			utils.DebugPrintln("Compile>  LOOP")
 		case runtime.JMP:

@@ -176,10 +176,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 				}
 
 				// 将新值赋值给变量
-				value := Value{
-					Type:  parser.VInt,
-					Value: valueB.Value.(int64),
-				}
+				value := TypeLoader(valueB)
 
 				*(*int64)(unsafe.Pointer(uintptr(stackItemA.Value.(int64)))) =
 					int64(uintptr(unsafe.Pointer(&value)))
@@ -417,4 +414,28 @@ func CheckValue(value *Value) error {
 	}
 
 	return nil
+}
+
+func TypeLoader(value *Value) Value {
+	var retValue Value
+
+	switch value.Type {
+	case parser.VInt:
+		retValue.Type = parser.VInt
+		retValue.Value = value.Value.(int64)
+	case parser.VStr:
+		retValue.Type = parser.VStr
+		retValue.Value = value.Value.(string)
+	case parser.VFloat:
+		retValue.Type = parser.VFloat
+		retValue.Value = value.Value.(float64)
+	case parser.VBool:
+		retValue.Type = parser.VBool
+		retValue.Value = value.Value.(bool)
+	default:
+		retValue.Type = parser.VVoid
+		retValue.Value = nil
+	}
+
+	return retValue
 }
