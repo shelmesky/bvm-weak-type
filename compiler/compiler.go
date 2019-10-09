@@ -69,6 +69,8 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 			utils.DebugPrintln("Compile>  MUL")
 		case runtime.DIV:
 			utils.DebugPrintln("Compile>  DIV")
+		case runtime.MOD:
+			utils.DebugPrintf("Compile>  MOD\n")
 		case runtime.ASSIGN:
 			utils.DebugPrintf("Compile>  ASSIGN\n")
 		case runtime.LOOP:
@@ -116,6 +118,20 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 			utils.DebugPrintf("Compile>  LTE\n")
 		case runtime.GTE:
 			utils.DebugPrintf("Compile>  GTE\n")
+		case runtime.BIT_NOT:
+			utils.DebugPrintf("Compile>  BIT_NOT\n")
+		case runtime.BIT_AND:
+			utils.DebugPrintf("Compile>  BIT_AND\n")
+		case runtime.BIT_OR:
+			utils.DebugPrintf("Compile>  BIT_OR\n")
+		case runtime.BIT_XOR:
+			utils.DebugPrintf("Compile>  BIT_XOR\n")
+		case runtime.LEFT_SHIFT:
+			utils.DebugPrintf("Compile>  LEFT_SHIFT\n")
+		case runtime.RIGHT_SHIFT:
+			utils.DebugPrintf("Compile>  RIGHT_SHIFT\n")
+		case runtime.POW:
+			utils.DebugPrintf("Compile>  POW\n")
 		}
 	}
 
@@ -236,6 +252,8 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			cmpl.AppendCode(runtime.MUL)
 		case parser.DIV:
 			cmpl.AppendCode(runtime.DIV)
+		case parser.MOD:
+			cmpl.AppendCode(runtime.MOD)
 		case parser.ASSIGN:
 			cmpl.AppendCode(runtime.ASSIGN)
 		case parser.AND:
@@ -256,6 +274,20 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			cmpl.AppendCode(runtime.LTE)
 		case parser.GTE:
 			cmpl.AppendCode(runtime.GTE)
+		case parser.BIT_NOT:
+			cmpl.AppendCode(runtime.BIT_NOT)
+		case parser.BIT_AND:
+			cmpl.AppendCode(runtime.BIT_AND)
+		case parser.BIT_OR:
+			cmpl.AppendCode(runtime.BIT_OR)
+		case parser.BIT_XOR:
+			cmpl.AppendCode(runtime.BIT_XOR)
+		case parser.LEFT_SHIFT:
+			cmpl.AppendCode(runtime.LEFT_SHIFT)
+		case parser.RIGHT_SHIFT:
+			cmpl.AppendCode(runtime.RIGHT_SHIFT)
+		case parser.POW:
+			cmpl.AppendCode(runtime.POW)
 		}
 
 	// 变量定义

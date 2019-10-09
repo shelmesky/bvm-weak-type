@@ -65,6 +65,15 @@ unicodeLetter	\x80
 &&				return l.char(AND)
 \|\|			return l.char(OR)
 
+\~              return l.char(BIT_NOT)
+\&              return l.char(BIT_AND)
+\|              return l.char(BIT_OR)
+\^              return l.char(BIT_XOR)
+\<\<            return l.char(LEFT_SHIFT)
+\>\>            return l.char(RIGHT_SHIFT)
+
+\*\*            return l.char(POW)
+
 \+[ \t\r]*\n?		return l.char(ADD)
 -[ \t\r]*\n?		return l.char(SUB)
 \*[ \t\r]*\n?		return l.char(MUL)

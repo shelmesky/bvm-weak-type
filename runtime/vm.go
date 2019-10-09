@@ -157,10 +157,19 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 				return err
 			}
 
+		case SUB:
+			utils.DebugPrintf("VM> SUB\n")
+
 		case MUL:
 			if err := Mul(vm); err != nil {
 				return err
 			}
+
+		case DIV:
+			utils.DebugPrintf("VM> DIV\n")
+
+		case MOD:
+			utils.DebugPrintf("VM> MOD\n")
 
 		// 赋值操作符
 		case ASSIGN:
@@ -376,6 +385,21 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			utils.DebugPrintf("VM> LTE\n")
 		case GTE:
 			utils.DebugPrintf("VM> GTE\n")
+
+		case BIT_NOT:
+			utils.DebugPrintf("VM> BIT_NOT\n")
+		case BIT_AND:
+			utils.DebugPrintf("VM> BIT_AND\n")
+		case BIT_OR:
+			utils.DebugPrintf("VM> BIT_OR\n")
+		case BIT_XOR:
+			utils.DebugPrintf("VM> BIT_XOR\n")
+		case LEFT_SHIFT:
+			utils.DebugPrintf("VM> LEFT_SHIFT\n")
+		case RIGHT_SHIFT:
+			utils.DebugPrintf("VM> RIGHT_SHIFT\n")
+		case POW:
+			utils.DebugPrintf("VM> POW\n")
 
 		default:
 			return fmt.Errorf("VM> unknown command %d\n", code[i])
