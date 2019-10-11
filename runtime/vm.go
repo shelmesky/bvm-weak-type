@@ -158,6 +158,9 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			}
 
 		case SUB:
+			if err := Sub(vm); err != nil {
+				return err
+			}
 			utils.DebugPrintf("VM> SUB\n")
 
 		case MUL:
@@ -166,9 +169,15 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			}
 
 		case DIV:
+			if err := Div(vm); err != nil {
+				return err
+			}
 			utils.DebugPrintf("VM> DIV\n")
 
 		case MOD:
+			if err := Mod(vm); err != nil {
+				return err
+			}
 			utils.DebugPrintf("VM> MOD\n")
 
 		// 赋值操作符
