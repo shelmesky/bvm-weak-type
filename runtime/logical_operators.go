@@ -6,17 +6,8 @@ import (
 )
 
 func Gt(vm *VM) error {
-	vm.ESP--
-	stackItemA := vm.Stack[vm.ESP]
-	stackItemB := vm.Stack[vm.ESP+1]
-
-	valueA := GetValueFromStack(vm, stackItemA)
-	valueB := GetValueFromStack(vm, stackItemB)
-
-	if err := CheckValue(valueA); err != nil {
-		return err
-	}
-	if err := CheckValue(valueB); err != nil {
+	valueA, valueB, err := getValueAB(vm)
+	if err != nil {
 		return err
 	}
 
@@ -46,17 +37,8 @@ func Gt(vm *VM) error {
 }
 
 func Lt(vm *VM) error {
-	vm.ESP--
-	stackItemA := vm.Stack[vm.ESP]
-	stackItemB := vm.Stack[vm.ESP+1]
-
-	valueA := GetValueFromStack(vm, stackItemA)
-	valueB := GetValueFromStack(vm, stackItemB)
-
-	if err := CheckValue(valueA); err != nil {
-		return err
-	}
-	if err := CheckValue(valueB); err != nil {
+	valueA, valueB, err := getValueAB(vm)
+	if err != nil {
 		return err
 	}
 

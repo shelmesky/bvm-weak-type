@@ -463,3 +463,28 @@ func TypeLoader(value *Value) Value {
 
 	return retValue
 }
+
+func getValueAB(vm *VM) (*Value, *Value, error) {
+	var (
+		valueA *Value
+		valueB *Value
+		err    error
+	)
+
+	// 从stack获取栈顶的2个元素
+	stackItemA := vm.Stack[vm.ESP-1]
+	stackItemB := vm.Stack[vm.ESP]
+
+	valueA = GetValueFromStack(vm, stackItemA)
+	valueB = GetValueFromStack(vm, stackItemB)
+
+	if err := CheckValue(valueA); err != nil {
+		return valueA, valueB, err
+	}
+
+	if err := CheckValue(valueB); err != nil {
+		return valueA, valueB, err
+	}
+
+	return valueA, valueB, err
+}

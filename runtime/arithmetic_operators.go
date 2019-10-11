@@ -6,18 +6,8 @@ import (
 )
 
 func Add(vm *VM) error {
-	// 从stack获取栈顶的2个元素
-	stackItemA := vm.Stack[vm.ESP-1]
-	stackItemB := vm.Stack[vm.ESP]
-
-	valueA := GetValueFromStack(vm, stackItemA)
-	valueB := GetValueFromStack(vm, stackItemB)
-
-	if err := CheckValue(valueA); err != nil {
-		return err
-	}
-
-	if err := CheckValue(valueB); err != nil {
+	valueA, valueB, err := getValueAB(vm)
+	if err != nil {
 		return err
 	}
 
@@ -38,18 +28,8 @@ func Add(vm *VM) error {
 }
 
 func Mul(vm *VM) error {
-	// 从stack获取栈顶的2个元素
-	stackItemA := vm.Stack[vm.ESP-1]
-	stackItemB := vm.Stack[vm.ESP]
-
-	valueA := GetValueFromStack(vm, stackItemA)
-	valueB := GetValueFromStack(vm, stackItemB)
-
-	if err := CheckValue(valueA); err != nil {
-		return err
-	}
-
-	if err := CheckValue(valueB); err != nil {
+	valueA, valueB, err := getValueAB(vm)
+	if err != nil {
 		return err
 	}
 
