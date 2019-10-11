@@ -39,6 +39,12 @@ contract mycnt {
     
      var t = (1+2)*3
      println(t)
+     
+     var a = 0
+     while (a<10) {
+        println(a)
+        a = a + 1
+    }
 }
 ```
 
