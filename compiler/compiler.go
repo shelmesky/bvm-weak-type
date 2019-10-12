@@ -118,8 +118,6 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 			utils.DebugPrintf("Compile>  LTE\n")
 		case runtime.GTE:
 			utils.DebugPrintf("Compile>  GTE\n")
-		case runtime.BIT_NOT:
-			utils.DebugPrintf("Compile>  BIT_NOT\n")
 		case runtime.BIT_AND:
 			utils.DebugPrintf("Compile>  BIT_AND\n")
 		case runtime.BIT_OR:
@@ -274,8 +272,6 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			cmpl.AppendCode(runtime.LTE)
 		case parser.GTE:
 			cmpl.AppendCode(runtime.GTE)
-		case parser.BIT_NOT:
-			cmpl.AppendCode(runtime.BIT_NOT)
 		case parser.BIT_AND:
 			cmpl.AppendCode(runtime.BIT_AND)
 		case parser.BIT_OR:

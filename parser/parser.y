@@ -127,8 +127,7 @@ func setResult(l yyLexer, v *Node) {
 %left OR
 %left LTE GTE LT GT EQ NOT_EQ
 %left ADD SUB
-%left MUL DIV MOD
-%left BIT_NOT BIT_AND BIT_OR BIT_XOR LEFT_SHIFT RIGHT_SHIFT
+%left MUL DIV MOD BIT_AND BIT_OR BIT_XOR LEFT_SHIFT RIGHT_SHIFT
 %right POW
 %right UNARYMINUS UNARYNOT
 
@@ -251,7 +250,6 @@ expr
     | expr GTE expr { $$ = newBinary($1, $3, GTE, yylex);  }
     | expr LT expr { $$ = newBinary($1, $3, LT, yylex); }
     | expr GT expr { $$ = newBinary($1, $3, GT, yylex);}
-    | expr BIT_NOT expr { $$ = newBinary($1, $3, BIT_NOT, yylex);}
     | expr BIT_AND expr { $$ = newBinary($1, $3, BIT_AND, yylex);}
     | expr BIT_OR expr { $$ = newBinary($1, $3, BIT_OR, yylex);}
     | expr BIT_XOR expr { $$ = newBinary($1, $3, BIT_XOR, yylex);}

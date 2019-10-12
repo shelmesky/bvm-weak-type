@@ -395,8 +395,6 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 		case GTE:
 			utils.DebugPrintf("VM> GTE\n")
 
-		case BIT_NOT:
-			utils.DebugPrintf("VM> BIT_NOT\n")
 		case BIT_AND:
 			utils.DebugPrintf("VM> BIT_AND\n")
 		case BIT_OR:

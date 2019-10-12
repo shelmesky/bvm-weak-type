@@ -29,7 +29,6 @@ const (
 	GT          // a > b
 	LTE         // a <= b
 	GTE         // a >= b
-	BIT_NOT     // a ~ b
 	BIT_AND     // a & b
 	BIT_OR      // a | b
 	BIT_XOR     // a^b
