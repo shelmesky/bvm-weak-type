@@ -161,7 +161,6 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			if err := Sub(vm); err != nil {
 				return err
 			}
-			utils.DebugPrintf("VM> SUB\n")
 
 		case MUL:
 			if err := Mul(vm); err != nil {
@@ -172,34 +171,17 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			if err := Div(vm); err != nil {
 				return err
 			}
-			utils.DebugPrintf("VM> DIV\n")
 
 		case MOD:
 			if err := Mod(vm); err != nil {
 				return err
 			}
-			utils.DebugPrintf("VM> MOD\n")
 
 		// 赋值操作符
 		case ASSIGN:
-			stackItemA := vm.Stack[vm.ESP-1]
-			stackItemB := vm.Stack[vm.ESP]
-
-			// 如果被赋值的类型是VAR_POINTER
-			if stackItemA.Type == VAR_POINTER {
-				valueB := GetValueFromStack(vm, stackItemB)
-
-				if err := CheckValue(valueB); err != nil {
-					return err
-				}
-
-				// 将新值赋值给变量
-				value := TypeLoader(valueB)
-
-				*(*int64)(unsafe.Pointer(uintptr(stackItemA.Value.(int64)))) =
-					int64(uintptr(unsafe.Pointer(&value)))
+			if err := Assign(vm); err != nil {
+				return err
 			}
-			utils.DebugPrintf("VM> ASSIGN\n")
 
 		case LOOP:
 			utils.DebugPrintf("VM> LOOP\n")
