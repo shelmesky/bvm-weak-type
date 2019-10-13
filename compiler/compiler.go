@@ -63,13 +63,13 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 			utils.DebugPrintf("Compile>  SETVAR index:[%d]\n", codes[1])
 
 		case runtime.ADD:
-			utils.DebugPrintln("Compile>  ADD")
+			utils.DebugPrintf("Compile>  ADD\n")
 		case runtime.SUB:
-			utils.DebugPrintln("Compile>  UB")
+			utils.DebugPrintf("Compile>  SUB\n")
 		case runtime.MUL:
-			utils.DebugPrintln("Compile>  MUL")
+			utils.DebugPrintf("Compile>  MUL\n")
 		case runtime.DIV:
-			utils.DebugPrintln("Compile>  DIV")
+			utils.DebugPrintf("Compile>  DIV\n")
 		case runtime.MOD:
 			utils.DebugPrintf("Compile>  MOD\n")
 		case runtime.BIT_AND:
@@ -109,7 +109,7 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 			utils.DebugPrintf("Compile>  ASSIGN\n")
 
 		case runtime.LOOP:
-			utils.DebugPrintln("Compile>  LOOP")
+			utils.DebugPrintf("Compile>  LOOP\n")
 		case runtime.JMP:
 			utils.DebugPrintf("Compile>  JMP [%d]\n", codes[1])
 		case runtime.JZE:
@@ -256,6 +256,42 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			if err = nodeToCode(cmpl, nBinary.Left); err != nil {
 				return err
 			}
+		}
+
+		// 如果操作符是类似+=的复合操作符
+		// 则生成GETVAR指令将符号左边的变量入栈
+		// 相当与将a+=1变为a=a+1
+		isAssignOperatos := false
+		switch nBinary.Oper {
+		case parser.ADD_ASSIGN:
+			isAssignOperatos = true
+		case parser.SUB_ASSIGN:
+			isAssignOperatos = true
+		case parser.MUL_ASSIGN:
+			isAssignOperatos = true
+		case parser.DIV_ASSIGN:
+			isAssignOperatos = true
+		case parser.MOD_ASSIGN:
+			isAssignOperatos = true
+		case parser.LEFT_SHIFT_ASSIGN:
+			isAssignOperatos = true
+		case parser.RIGHT_SHIFT_ASSIGN:
+			isAssignOperatos = true
+		case parser.BIT_AND_ASSIGN:
+			isAssignOperatos = true
+		case parser.BIT_XOR_ASSIGN:
+			isAssignOperatos = true
+		case parser.BIT_OR_ASSIGN:
+			isAssignOperatos = true
+		}
+
+		if isAssignOperatos == true {
+			name := nBinary.Left.Value.(*parser.NVarValue).Name
+			if variable, ok = cmpl.VarTable[name]; !ok {
+				return fmt.Errorf("unknow variable: %s\n", name)
+			}
+
+			cmpl.AppendCode(runtime.GETVAR, BCode(variable.Index))
 		}
 
 		// 递归处理右子树

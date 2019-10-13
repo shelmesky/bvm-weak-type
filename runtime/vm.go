@@ -191,7 +191,9 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			utils.DebugPrintf("VM> POW\n")
 
 		case ADD_ASSIGN:
-			utils.DebugPrintf("VM> ADD_ASSIGN\n")
+			if err := AddAssign(vm); err != nil {
+				return err
+			}
 		case SUB_ASSIGN:
 			utils.DebugPrintf("VM> SUB_ASSIGN\n")
 		case MUL_ASSIGN:
