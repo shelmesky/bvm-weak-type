@@ -2,4 +2,6 @@ contract mycnt {
     var a = 1
     a += 3 * (5 - 1)
     println(a)
+    var b = a + 2
+    println(b)
 }

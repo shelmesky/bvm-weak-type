@@ -7,21 +7,21 @@ import (
 )
 
 func Assign(vm *VM) error {
-	stackItemA := vm.Stack[vm.ESP-1]
-	stackItemB := vm.Stack[vm.ESP]
+	stackItemVar := vm.Stack[vm.ESP-1]
+	stackItemExprResult := vm.Stack[vm.ESP]
 
 	// 如果被赋值的类型是VAR_POINTER
-	if stackItemA.Type == VAR_POINTER {
-		valueB := GetValueFromStack(vm, stackItemB)
+	if stackItemVar.Type == VAR_POINTER {
+		valueA := GetValueFromStack(vm, stackItemExprResult)
 
-		if err := CheckValue(valueB); err != nil {
+		if err := CheckValue(valueA); err != nil {
 			return err
 		}
 
 		// 将新值赋值给变量
-		value := TypeLoader(valueB)
+		value := TypeLoader(valueA)
 
-		*(*int64)(unsafe.Pointer(uintptr(stackItemA.Value.(int64)))) =
+		*(*int64)(unsafe.Pointer(uintptr(stackItemVar.Value.(int64)))) =
 			int64(uintptr(unsafe.Pointer(&value)))
 	}
 	utils.DebugPrintf("VM> ASSIGN\n")
@@ -29,23 +29,18 @@ func Assign(vm *VM) error {
 	return nil
 }
 
+/*
+实现+=指令：stackItemVar是栈上保存的变量的指针
+valueA是将要被赋值的变量的复制品
+a+=1最终在VM中被转换为a=a+1
+*/
 func AddAssign(vm *VM) error {
 	stackItemVar := vm.Stack[vm.ESP-2]
 
-	stackItemA := vm.Stack[vm.ESP-1]
-	stackItemB := vm.Stack[vm.ESP]
-
 	// 如果被赋值的类型是VAR_POINTER
 	if stackItemVar.Type == VAR_POINTER {
-		valueA := GetValueFromStack(vm, stackItemA)
-
-		if err := CheckValue(valueA); err != nil {
-			return err
-		}
-
-		valueB := GetValueFromStack(vm, stackItemB)
-
-		if err := CheckValue(valueB); err != nil {
+		valueA, valueB, err := getValueAB(vm)
+		if err != nil {
 			return err
 		}
 
