@@ -37,14 +37,21 @@ contract mycnt {
         println(l)
     }
     
-     var t = (1+2)*3
-     println(t)
+    var t = (1+2)*3
+    println(t)
      
-     var a = 0
-     while (a<10) {
-        println(a)
-        a = a + 1
+    var a = 0
+    while (a<10) {
+       println(a)
+       a = a + 1
     }
+    
+    var a = "mystr"
+    println(a)
+
+    var a = 1
+    a += 3 * (5 - 1)
+    println(a)
 }
 ```
 

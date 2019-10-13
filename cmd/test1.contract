@@ -26,6 +26,13 @@ contract mycnt {
         println(l)
     }
 
-     var t = (1+2)*3/4- 5*6 % 2
-     println(t)
+    var t = (1+2)*3/4- 5*6 % 2
+    println(t)
+
+    var mystr = "mystr"
+    println(mystr)
+
+    var v = 1
+    v += 3 * (5 - 1)
+    println(v)
 }
