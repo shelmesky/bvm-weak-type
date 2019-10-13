@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	StackSize = 32
+	StackSize = 64
 )
 
 type BCode uint16
