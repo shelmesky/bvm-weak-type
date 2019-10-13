@@ -65,6 +65,11 @@ func setResult(l yyLexer, v *Node) {
 %token MUL_ASSIGN // *=
 %token DIV_ASSIGN // /=
 %token MOD_ASSIGN // %=
+%token LEFT_SHIFT_ASSIGN // <<=
+%token RIGHT_SHIFT_ASSIGN // >>=
+%token BIT_AND_ASSIGN // &=
+%token BIT_XOR_ASSIGN // ^=
+%token BIT_OR_ASSIGN // |=
 %token ASSIGN // =
 
 %token AND // &&
@@ -192,6 +197,11 @@ statement
     | variable MUL_ASSIGN expr { $$ = newBinary($1, $3, MUL_ASSIGN, yylex); }
     | variable DIV_ASSIGN expr { $$ = newBinary($1, $3, DIV_ASSIGN, yylex); }
     | variable MOD_ASSIGN expr { $$ = newBinary($1, $3, MOD_ASSIGN, yylex); }
+    | variable LEFT_SHIFT_ASSIGN expr { $$ = newBinary($1, $3, LEFT_SHIFT_ASSIGN, yylex); }
+    | variable RIGHT_SHIFT_ASSIGN expr { $$ = newBinary($1, $3, RIGHT_SHIFT_ASSIGN, yylex); }
+    | variable BIT_AND_ASSIGN expr { $$ = newBinary($1, $3, BIT_AND_ASSIGN, yylex); }
+    | variable BIT_XOR_ASSIGN expr { $$ = newBinary($1, $3, BIT_XOR_ASSIGN, yylex); }
+    | variable BIT_OR_ASSIGN expr { $$ = newBinary($1, $3, BIT_OR_ASSIGN, yylex); }
     | index ASSIGN expr { $$ = newBinary($1, $3, ASSIGN, yylex) }
     | VAR IDENT ASSIGN expr { $$ = newBinary( newVarDecl([]string{$2}, yylex ), $4, ASSIGN, yylex) }
     | VAR ident_list { $$ = newVarDecl($2, yylex )}

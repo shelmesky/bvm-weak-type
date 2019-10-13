@@ -44,6 +44,11 @@ unicodeLetter	\x80
 \*=				return l.char(MUL_ASSIGN)
 \/=				return l.char(DIV_ASSIGN)
 %=				return l.char(MOD_ASSIGN)
+\<\<=           return l.char(LEFT_SHIFT_ASSIGN)
+>>=             return l.char(RIGHT_SHIFT_ASSIGN)
+&=              return l.char(BIT_AND_ASSIGN)
+\^=             return l.char(BIT_XOR_ASSIGN)
+\|=             return l.char(BIT_OR_ASSIGN)
 =				return l.char(ASSIGN)
 
 \n				return l.char(NEWLINE)
@@ -65,11 +70,11 @@ unicodeLetter	\x80
 &&				return l.char(AND)
 \|\|			return l.char(OR)
 
-\&              return l.char(BIT_AND)
+&               return l.char(BIT_AND)
 \|              return l.char(BIT_OR)
 \^              return l.char(BIT_XOR)
 \<\<            return l.char(LEFT_SHIFT)
-\>\>            return l.char(RIGHT_SHIFT)
+>>              return l.char(RIGHT_SHIFT)
 
 \*\*            return l.char(POW)
 

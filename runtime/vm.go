@@ -177,6 +177,39 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 				return err
 			}
 
+		case BIT_AND:
+			utils.DebugPrintf("VM> BIT_AND\n")
+		case BIT_OR:
+			utils.DebugPrintf("VM> BIT_OR\n")
+		case BIT_XOR:
+			utils.DebugPrintf("VM> BIT_XOR\n")
+		case LEFT_SHIFT:
+			utils.DebugPrintf("VM> LEFT_SHIFT\n")
+		case RIGHT_SHIFT:
+			utils.DebugPrintf("VM> RIGHT_SHIFT\n")
+		case POW:
+			utils.DebugPrintf("VM> POW\n")
+
+		case ADD_ASSIGN:
+			utils.DebugPrintf("VM> ADD_ASSIGN\n")
+		case SUB_ASSIGN:
+			utils.DebugPrintf("VM> SUB_ASSIGN\n")
+		case MUL_ASSIGN:
+			utils.DebugPrintf("VM> MUL_ASSIGN\n")
+		case DIV_ASSIGN:
+			utils.DebugPrintf("VM> DIV_ASSIGN\n")
+		case MOD_ASSIGN:
+			utils.DebugPrintf("VM> MOD_ASSIGN\n")
+		case LEFT_SHIFT_ASSIGN:
+			utils.DebugPrintf("VM> LEFT_SHIFT_ASSIGN\n")
+		case RIGHT_SHIFT_ASSIGN:
+			utils.DebugPrintf("VM> RIGHT_SHIFT_ASSIGN\n")
+		case BIT_AND_ASSIGN:
+			utils.DebugPrintf("VM> BIT_AND_ASSIGN\n")
+		case BIT_XOR_ASSIGN:
+			utils.DebugPrintf("VM> BIT_XOR_ASSIGN\n")
+		case BIT_OR_ASSIGN:
+			utils.DebugPrintf("VM> BIT_OR_ASSIGN\n")
 		// 赋值操作符
 		case ASSIGN:
 			if err := Assign(vm); err != nil {
@@ -376,19 +409,6 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			utils.DebugPrintf("VM> LTE\n")
 		case GTE:
 			utils.DebugPrintf("VM> GTE\n")
-
-		case BIT_AND:
-			utils.DebugPrintf("VM> BIT_AND\n")
-		case BIT_OR:
-			utils.DebugPrintf("VM> BIT_OR\n")
-		case BIT_XOR:
-			utils.DebugPrintf("VM> BIT_XOR\n")
-		case LEFT_SHIFT:
-			utils.DebugPrintf("VM> LEFT_SHIFT\n")
-		case RIGHT_SHIFT:
-			utils.DebugPrintf("VM> RIGHT_SHIFT\n")
-		case POW:
-			utils.DebugPrintf("VM> POW\n")
 
 		default:
 			return fmt.Errorf("VM> unknown command %d\n", code[i])

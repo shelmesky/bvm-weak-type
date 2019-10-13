@@ -61,6 +61,7 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 			utils.DebugPrintf("Compile>  GETVAR index:[%d]\n", codes[1])
 		case runtime.SETVAR:
 			utils.DebugPrintf("Compile>  SETVAR index:[%d]\n", codes[1])
+
 		case runtime.ADD:
 			utils.DebugPrintln("Compile>  ADD")
 		case runtime.SUB:
@@ -71,8 +72,42 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 			utils.DebugPrintln("Compile>  DIV")
 		case runtime.MOD:
 			utils.DebugPrintf("Compile>  MOD\n")
+		case runtime.BIT_AND:
+			utils.DebugPrintf("Compile>  BIT_AND\n")
+		case runtime.BIT_OR:
+			utils.DebugPrintf("Compile>  BIT_OR\n")
+		case runtime.BIT_XOR:
+			utils.DebugPrintf("Compile>  BIT_XOR\n")
+		case runtime.LEFT_SHIFT:
+			utils.DebugPrintf("Compile>  LEFT_SHIFT\n")
+		case runtime.RIGHT_SHIFT:
+			utils.DebugPrintf("Compile>  RIGHT_SHIFT\n")
+		case runtime.POW:
+			utils.DebugPrintf("Compile>  POW\n")
+
+		case runtime.ADD_ASSIGN:
+			utils.DebugPrintf("Compile>  ADD_ASSIGN\n")
+		case runtime.SUB_ASSIGN:
+			utils.DebugPrintf("Compile>  SUB_ASSIGN\n")
+		case runtime.MUL_ASSIGN:
+			utils.DebugPrintf("Compile>  MUL_ASSIGN\n")
+		case runtime.DIV_ASSIGN:
+			utils.DebugPrintf("Compile>  MUL_ASSIGN\n")
+		case runtime.MOD_ASSIGN:
+			utils.DebugPrintf("Compile>  MOD_ASSIGN\n")
+		case runtime.LEFT_SHIFT_ASSIGN:
+			utils.DebugPrintf("Compile> LEFT_SHIFT_ASSIGN\n")
+		case runtime.RIGHT_SHIFT_ASSIGN:
+			utils.DebugPrintf("Compile> RIGHT_SHIFT_ASSIGN\n")
+		case runtime.BIT_AND_ASSIGN:
+			utils.DebugPrintf("Compile> BIT_AND_ASSIGN\n")
+		case runtime.BIT_XOR_ASSIGN:
+			utils.DebugPrintf("Compile> BIT_XOR_ASSIGN\n")
+		case runtime.BIT_OR_ASSIGN:
+			utils.DebugPrintf("Compile> BIT_OR_ASSIGN\n")
 		case runtime.ASSIGN:
 			utils.DebugPrintf("Compile>  ASSIGN\n")
+
 		case runtime.LOOP:
 			utils.DebugPrintln("Compile>  LOOP")
 		case runtime.JMP:
@@ -118,18 +153,6 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 			utils.DebugPrintf("Compile>  LTE\n")
 		case runtime.GTE:
 			utils.DebugPrintf("Compile>  GTE\n")
-		case runtime.BIT_AND:
-			utils.DebugPrintf("Compile>  BIT_AND\n")
-		case runtime.BIT_OR:
-			utils.DebugPrintf("Compile>  BIT_OR\n")
-		case runtime.BIT_XOR:
-			utils.DebugPrintf("Compile>  BIT_XOR\n")
-		case runtime.LEFT_SHIFT:
-			utils.DebugPrintf("Compile>  LEFT_SHIFT\n")
-		case runtime.RIGHT_SHIFT:
-			utils.DebugPrintf("Compile>  RIGHT_SHIFT\n")
-		case runtime.POW:
-			utils.DebugPrintf("Compile>  POW\n")
 		}
 	}
 
@@ -252,6 +275,38 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			cmpl.AppendCode(runtime.DIV)
 		case parser.MOD:
 			cmpl.AppendCode(runtime.MOD)
+		case parser.BIT_AND:
+			cmpl.AppendCode(runtime.BIT_AND)
+		case parser.BIT_OR:
+			cmpl.AppendCode(runtime.BIT_OR)
+		case parser.BIT_XOR:
+			cmpl.AppendCode(runtime.BIT_XOR)
+		case parser.LEFT_SHIFT:
+			cmpl.AppendCode(runtime.LEFT_SHIFT)
+		case parser.RIGHT_SHIFT:
+			cmpl.AppendCode(runtime.RIGHT_SHIFT)
+		case parser.POW:
+			cmpl.AppendCode(runtime.POW)
+		case parser.ADD_ASSIGN:
+			cmpl.AppendCode(runtime.ADD_ASSIGN)
+		case parser.SUB_ASSIGN:
+			cmpl.AppendCode(runtime.SUB_ASSIGN)
+		case parser.MUL_ASSIGN:
+			cmpl.AppendCode(runtime.MUL_ASSIGN)
+		case parser.DIV_ASSIGN:
+			cmpl.AppendCode(runtime.DIV_ASSIGN)
+		case parser.MOD_ASSIGN:
+			cmpl.AppendCode(runtime.MOD_ASSIGN)
+		case parser.LEFT_SHIFT_ASSIGN:
+			cmpl.AppendCode(runtime.LEFT_SHIFT_ASSIGN)
+		case parser.RIGHT_SHIFT_ASSIGN:
+			cmpl.AppendCode(runtime.RIGHT_SHIFT_ASSIGN)
+		case parser.BIT_AND_ASSIGN:
+			cmpl.AppendCode(runtime.BIT_AND_ASSIGN)
+		case parser.BIT_XOR_ASSIGN:
+			cmpl.AppendCode(runtime.BIT_XOR_ASSIGN)
+		case parser.BIT_OR_ASSIGN:
+			cmpl.AppendCode(runtime.BIT_OR_ASSIGN)
 		case parser.ASSIGN:
 			cmpl.AppendCode(runtime.ASSIGN)
 		case parser.AND:
@@ -272,18 +327,6 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			cmpl.AppendCode(runtime.LTE)
 		case parser.GTE:
 			cmpl.AppendCode(runtime.GTE)
-		case parser.BIT_AND:
-			cmpl.AppendCode(runtime.BIT_AND)
-		case parser.BIT_OR:
-			cmpl.AppendCode(runtime.BIT_OR)
-		case parser.BIT_XOR:
-			cmpl.AppendCode(runtime.BIT_XOR)
-		case parser.LEFT_SHIFT:
-			cmpl.AppendCode(runtime.LEFT_SHIFT)
-		case parser.RIGHT_SHIFT:
-			cmpl.AppendCode(runtime.RIGHT_SHIFT)
-		case parser.POW:
-			cmpl.AppendCode(runtime.POW)
 		}
 
 	// 变量定义
