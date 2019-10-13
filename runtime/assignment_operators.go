@@ -21,6 +21,9 @@ func Assign(vm *VM) error {
 		// 将新值赋值给变量
 		value := TypeLoader(valueA)
 
+		// 执行完毕ASSIGN后: 变量 = stackItem, 这2个栈上的元素不再需要
+		vm.ESP -= 2
+
 		*(*int64)(unsafe.Pointer(uintptr(stackItemVar.Value.(int64)))) =
 			int64(uintptr(unsafe.Pointer(&value)))
 	}
@@ -49,6 +52,9 @@ func AddAssign(vm *VM) error {
 			Type:  parser.VInt,
 			Value: result,
 		}
+
+		// 执行完毕ADD_ASSIGN后: 变量 = 变量 + stackItem, 这3个栈上的元素不再需要
+		vm.ESP -= 3
 
 		*(*int64)(unsafe.Pointer(uintptr(stackItemVar.Value.(int64)))) =
 			int64(uintptr(unsafe.Pointer(&value)))
