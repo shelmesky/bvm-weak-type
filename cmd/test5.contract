@@ -4,4 +4,7 @@ contract mycnt {
     println(a)
     var b = a + 2
     println(b)
+
+    var c += 123
+    println(c)
 }

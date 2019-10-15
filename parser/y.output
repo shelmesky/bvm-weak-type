@@ -24,17 +24,17 @@ state 2
 
 
 state 3
-	contract_declaration:  contract_declaration NEWLINE.    (105)
+	contract_declaration:  contract_declaration NEWLINE.    (125)
 
-	.  reduce 105 (src line 320)
+	.  reduce 125 (src line 358)
 
 
 state 4
 	contract_declaration:  CONTRACT IDENT.contract_read LBRACE NEWLINE contract_body RBRACE 
-	contract_read: .    (102)
+	contract_read: .    (122)
 
 	READ  shift 6
-	.  reduce 102 (src line 310)
+	.  reduce 122 (src line 348)
 
 	contract_read  goto 5
 
@@ -46,9 +46,9 @@ state 5
 
 
 state 6
-	contract_read:  READ.    (103)
+	contract_read:  READ.    (123)
 
-	.  reduce 103 (src line 312)
+	.  reduce 123 (src line 350)
 
 
 state 7
@@ -60,10 +60,10 @@ state 7
 
 state 8
 	contract_declaration:  CONTRACT IDENT contract_read LBRACE NEWLINE.contract_body RBRACE 
-	contract_data: .    (99)
+	contract_data: .    (119)
 
 	DATA  shift 11
-	.  reduce 99 (src line 299)
+	.  reduce 119 (src line 337)
 
 	contract_data  goto 10
 	contract_body  goto 9
@@ -91,16 +91,16 @@ state 11
 
 
 state 12
-	contract_declaration:  CONTRACT IDENT contract_read LBRACE NEWLINE contract_body RBRACE.    (104)
+	contract_declaration:  CONTRACT IDENT contract_read LBRACE NEWLINE contract_body RBRACE.    (124)
 
-	.  reduce 104 (src line 315)
+	.  reduce 124 (src line 353)
 
 
 state 13
 	statements:  statements.NEWLINE 
 	statements:  statements.switch 
 	statements:  statements.statement NEWLINE 
-	contract_body:  contract_data statements.    (101)
+	contract_body:  contract_data statements.    (121)
 
 	IDENT  shift 31
 	CALL  shift 28
@@ -116,7 +116,7 @@ state 13
 	FOR  shift 30
 	SWITCH  shift 18
 	VAR  shift 21
-	.  reduce 101 (src line 304)
+	.  reduce 121 (src line 342)
 
 	variable  goto 19
 	switch  goto 16
@@ -203,20 +203,50 @@ state 19
 state 20
 	index:  index.LBRACKET expr RBRACKET 
 	statement:  index.ASSIGN expr 
+	statement:  index.ADD_ASSIGN expr 
+	statement:  index.SUB_ASSIGN expr 
+	statement:  index.MUL_ASSIGN expr 
+	statement:  index.DIV_ASSIGN expr 
+	statement:  index.MOD_ASSIGN expr 
+	statement:  index.LEFT_SHIFT_ASSIGN expr 
+	statement:  index.RIGHT_SHIFT_ASSIGN expr 
+	statement:  index.BIT_AND_ASSIGN expr 
+	statement:  index.BIT_XOR_ASSIGN expr 
+	statement:  index.BIT_OR_ASSIGN expr 
 
 	LBRACKET  shift 63
+	ADD_ASSIGN  shift 65
+	SUB_ASSIGN  shift 66
+	MUL_ASSIGN  shift 67
+	DIV_ASSIGN  shift 68
+	MOD_ASSIGN  shift 69
+	LEFT_SHIFT_ASSIGN  shift 70
+	RIGHT_SHIFT_ASSIGN  shift 71
+	BIT_AND_ASSIGN  shift 72
+	BIT_XOR_ASSIGN  shift 73
+	BIT_OR_ASSIGN  shift 74
 	ASSIGN  shift 64
 	.  error
 
 
 state 21
 	statement:  VAR.IDENT ASSIGN expr 
+	statement:  VAR.IDENT ADD_ASSIGN expr 
+	statement:  VAR.IDENT SUB_ASSIGN expr 
+	statement:  VAR.IDENT MUL_ASSIGN expr 
+	statement:  VAR.IDENT DIV_ASSIGN expr 
+	statement:  VAR.IDENT MOD_ASSIGN expr 
+	statement:  VAR.IDENT LEFT_SHIFT_ASSIGN expr 
+	statement:  VAR.IDENT RIGHT_SHIFT_ASSIGN expr 
+	statement:  VAR.IDENT BIT_AND_ASSIGN expr 
+	statement:  VAR.IDENT BIT_XOR_ASSIGN expr 
+	statement:  VAR.IDENT BIT_OR_ASSIGN expr 
 	statement:  VAR.ident_list 
 
-	IDENT  shift 65
+	IDENT  shift 75
 	.  error
 
-	ident_list  goto 66
+	ident_list  goto 76
 
 state 22
 	statement:  IF.expr LBRACE statements RBRACE elif else 
@@ -239,23 +269,23 @@ state 22
 	NOT  shift 51
 	.  error
 
-	expr  goto 67
+	expr  goto 77
 	index  goto 45
 
 state 23
-	statement:  BREAK.    (38)
+	statement:  BREAK.    (58)
 
-	.  reduce 38 (src line 209)
+	.  reduce 58 (src line 242)
 
 
 state 24
-	statement:  CONTINUE.    (39)
+	statement:  CONTINUE.    (59)
 
-	.  reduce 39 (src line 210)
+	.  reduce 59 (src line 243)
 
 
 state 25
-	statement:  RETURN.    (40)
+	statement:  RETURN.    (60)
 	statement:  RETURN.expr 
 
 	IDENT  shift 47
@@ -274,9 +304,9 @@ state 25
 	LBRACKET  shift 48
 	SUB  shift 50
 	NOT  shift 51
-	.  reduce 40 (src line 211)
+	.  reduce 60 (src line 244)
 
-	expr  goto 68
+	expr  goto 78
 	index  goto 45
 
 state 26
@@ -300,13 +330,13 @@ state 26
 	NOT  shift 51
 	.  error
 
-	expr  goto 69
+	expr  goto 79
 	index  goto 45
 
 state 27
 	statement:  FUNC.CALL par_declarations RPAREN LBRACE statements RBRACE 
 
-	CALL  shift 70
+	CALL  shift 80
 	.  error
 
 
@@ -332,25 +362,25 @@ state 28
 	NOT  shift 51
 	.  reduce 5 (src line 150)
 
-	params  goto 71
-	expr  goto 72
+	params  goto 81
+	expr  goto 82
 	index  goto 45
 
 state 29
 	statement:  CALLCONTRACT.cntparams RPAREN 
 	cntparams: .    (8)
 
-	IDENT  shift 74
+	IDENT  shift 84
 	.  reduce 8 (src line 156)
 
-	cntparams  goto 73
+	cntparams  goto 83
 
 state 30
 	statement:  FOR.IDENT IN expr LBRACE statements RBRACE 
 	statement:  FOR.IDENT COMMA IDENT IN expr LBRACE statements RBRACE 
 	statement:  FOR.IDENT IN expr DOUBLEDOT expr LBRACE statements RBRACE 
 
-	IDENT  shift 75
+	IDENT  shift 85
 	.  error
 
 
@@ -381,17 +411,17 @@ state 32
 	NOT  shift 51
 	.  error
 
-	expr  goto 76
+	expr  goto 86
 	index  goto 45
 
 state 33
 	contract_data:  DATA LBRACE NEWLINE.var_declarations NEWLINE RBRACE NEWLINE 
 
-	VAR  shift 79
+	VAR  shift 89
 	.  error
 
-	var_declaration  goto 78
-	var_declarations  goto 77
+	var_declaration  goto 88
+	var_declarations  goto 87
 
 state 34
 	statements:  statements statement NEWLINE.    (4)
@@ -421,26 +451,26 @@ state 35
 	expr:  expr.RIGHT_SHIFT expr 
 	expr:  expr.POW expr 
 
-	NEWLINE  shift 80
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
+	NEWLINE  shift 90
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
 	.  error
 
 
@@ -465,43 +495,43 @@ state 36
 	NOT  shift 51
 	.  error
 
-	expr  goto 100
+	expr  goto 110
 	index  goto 45
 
 state 37
-	expr:  INT.    (55)
+	expr:  INT.    (75)
 
-	.  reduce 55 (src line 237)
+	.  reduce 75 (src line 272)
 
 
 state 38
-	expr:  FLOAT.    (56)
+	expr:  FLOAT.    (76)
 
-	.  reduce 56 (src line 238)
+	.  reduce 76 (src line 273)
 
 
 state 39
-	expr:  STRING.    (57)
+	expr:  STRING.    (77)
 
-	.  reduce 57 (src line 239)
+	.  reduce 77 (src line 274)
 
 
 state 40
-	expr:  QSTRING.    (58)
+	expr:  QSTRING.    (78)
 
-	.  reduce 58 (src line 240)
+	.  reduce 78 (src line 275)
 
 
 state 41
-	expr:  TRUE.    (59)
+	expr:  TRUE.    (79)
 
-	.  reduce 59 (src line 241)
+	.  reduce 79 (src line 276)
 
 
 state 42
-	expr:  FALSE.    (60)
+	expr:  FALSE.    (80)
 
-	.  reduce 60 (src line 242)
+	.  reduce 80 (src line 277)
 
 
 state 43
@@ -526,37 +556,37 @@ state 43
 	NOT  shift 51
 	.  reduce 5 (src line 150)
 
-	params  goto 101
-	expr  goto 72
+	params  goto 111
+	expr  goto 82
 	index  goto 45
 
 state 44
 	expr:  CALLCONTRACT.cntparams RPAREN 
 	cntparams: .    (8)
 
-	IDENT  shift 74
+	IDENT  shift 84
 	.  reduce 8 (src line 156)
 
-	cntparams  goto 102
+	cntparams  goto 112
 
 state 45
 	index:  index.LBRACKET expr RBRACKET 
-	expr:  index.    (63)
+	expr:  index.    (83)
 
 	LBRACKET  shift 63
-	.  reduce 63 (src line 245)
+	.  reduce 83 (src line 282)
 
 
 state 46
-	expr:  ENV.    (64)
+	expr:  ENV.    (84)
 
-	.  reduce 64 (src line 246)
+	.  reduce 84 (src line 283)
 
 
 state 47
-	expr:  IDENT.    (65)
+	expr:  IDENT.    (85)
 
-	.  reduce 65 (src line 247)
+	.  reduce 85 (src line 284)
 
 
 state 48
@@ -580,17 +610,17 @@ state 48
 	NOT  shift 51
 	.  error
 
-	expr  goto 104
+	expr  goto 114
 	index  goto 45
-	exprlist  goto 103
+	exprlist  goto 113
 
 state 49
 	expr:  LBRACE.exprmaplist RBRACE 
 
-	STRING  shift 106
+	STRING  shift 116
 	.  error
 
-	exprmaplist  goto 105
+	exprmaplist  goto 115
 
 state 50
 	expr:  SUB.expr 
@@ -613,7 +643,7 @@ state 50
 	NOT  shift 51
 	.  error
 
-	expr  goto 107
+	expr  goto 117
 	index  goto 45
 
 state 51
@@ -637,7 +667,7 @@ state 51
 	NOT  shift 51
 	.  error
 
-	expr  goto 108
+	expr  goto 118
 	index  goto 45
 
 state 52
@@ -661,7 +691,7 @@ state 52
 	NOT  shift 51
 	.  error
 
-	expr  goto 109
+	expr  goto 119
 	index  goto 45
 
 state 53
@@ -685,7 +715,7 @@ state 53
 	NOT  shift 51
 	.  error
 
-	expr  goto 110
+	expr  goto 120
 	index  goto 45
 
 state 54
@@ -709,7 +739,7 @@ state 54
 	NOT  shift 51
 	.  error
 
-	expr  goto 111
+	expr  goto 121
 	index  goto 45
 
 state 55
@@ -733,7 +763,7 @@ state 55
 	NOT  shift 51
 	.  error
 
-	expr  goto 112
+	expr  goto 122
 	index  goto 45
 
 state 56
@@ -757,7 +787,7 @@ state 56
 	NOT  shift 51
 	.  error
 
-	expr  goto 113
+	expr  goto 123
 	index  goto 45
 
 state 57
@@ -781,7 +811,7 @@ state 57
 	NOT  shift 51
 	.  error
 
-	expr  goto 114
+	expr  goto 124
 	index  goto 45
 
 state 58
@@ -805,7 +835,7 @@ state 58
 	NOT  shift 51
 	.  error
 
-	expr  goto 115
+	expr  goto 125
 	index  goto 45
 
 state 59
@@ -829,7 +859,7 @@ state 59
 	NOT  shift 51
 	.  error
 
-	expr  goto 116
+	expr  goto 126
 	index  goto 45
 
 state 60
@@ -853,7 +883,7 @@ state 60
 	NOT  shift 51
 	.  error
 
-	expr  goto 117
+	expr  goto 127
 	index  goto 45
 
 state 61
@@ -877,7 +907,7 @@ state 61
 	NOT  shift 51
 	.  error
 
-	expr  goto 118
+	expr  goto 128
 	index  goto 45
 
 state 62
@@ -901,7 +931,7 @@ state 62
 	NOT  shift 51
 	.  error
 
-	expr  goto 119
+	expr  goto 129
 	index  goto 45
 
 state 63
@@ -925,7 +955,7 @@ state 63
 	NOT  shift 51
 	.  error
 
-	expr  goto 120
+	expr  goto 130
 	index  goto 45
 
 state 64
@@ -949,26 +979,286 @@ state 64
 	NOT  shift 51
 	.  error
 
-	expr  goto 121
+	expr  goto 131
 	index  goto 45
 
 state 65
-	statement:  VAR IDENT.ASSIGN expr 
-	ident_list:  IDENT.    (89)
+	statement:  index ADD_ASSIGN.expr 
 
-	ASSIGN  shift 122
-	.  reduce 89 (src line 274)
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
 
+	expr  goto 132
+	index  goto 45
 
 state 66
-	statement:  VAR ident_list.    (36)
-	ident_list:  ident_list.IDENT 
+	statement:  index SUB_ASSIGN.expr 
 
-	IDENT  shift 123
-	.  reduce 36 (src line 207)
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
 
+	expr  goto 133
+	index  goto 45
 
 state 67
+	statement:  index MUL_ASSIGN.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 134
+	index  goto 45
+
+state 68
+	statement:  index DIV_ASSIGN.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 135
+	index  goto 45
+
+state 69
+	statement:  index MOD_ASSIGN.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 136
+	index  goto 45
+
+state 70
+	statement:  index LEFT_SHIFT_ASSIGN.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 137
+	index  goto 45
+
+state 71
+	statement:  index RIGHT_SHIFT_ASSIGN.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 138
+	index  goto 45
+
+state 72
+	statement:  index BIT_AND_ASSIGN.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 139
+	index  goto 45
+
+state 73
+	statement:  index BIT_XOR_ASSIGN.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 140
+	index  goto 45
+
+state 74
+	statement:  index BIT_OR_ASSIGN.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 141
+	index  goto 45
+
+state 75
+	statement:  VAR IDENT.ASSIGN expr 
+	statement:  VAR IDENT.ADD_ASSIGN expr 
+	statement:  VAR IDENT.SUB_ASSIGN expr 
+	statement:  VAR IDENT.MUL_ASSIGN expr 
+	statement:  VAR IDENT.DIV_ASSIGN expr 
+	statement:  VAR IDENT.MOD_ASSIGN expr 
+	statement:  VAR IDENT.LEFT_SHIFT_ASSIGN expr 
+	statement:  VAR IDENT.RIGHT_SHIFT_ASSIGN expr 
+	statement:  VAR IDENT.BIT_AND_ASSIGN expr 
+	statement:  VAR IDENT.BIT_XOR_ASSIGN expr 
+	statement:  VAR IDENT.BIT_OR_ASSIGN expr 
+	ident_list:  IDENT.    (109)
+
+	ADD_ASSIGN  shift 143
+	SUB_ASSIGN  shift 144
+	MUL_ASSIGN  shift 145
+	DIV_ASSIGN  shift 146
+	MOD_ASSIGN  shift 147
+	LEFT_SHIFT_ASSIGN  shift 148
+	RIGHT_SHIFT_ASSIGN  shift 149
+	BIT_AND_ASSIGN  shift 150
+	BIT_XOR_ASSIGN  shift 151
+	BIT_OR_ASSIGN  shift 152
+	ASSIGN  shift 142
+	.  reduce 109 (src line 312)
+
+
+state 76
+	statement:  VAR ident_list.    (56)
+	ident_list:  ident_list.IDENT 
+
+	IDENT  shift 153
+	.  reduce 56 (src line 239)
+
+
+state 77
 	statement:  IF expr.LBRACE statements RBRACE elif else 
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -990,31 +1280,31 @@ state 67
 	expr:  expr.RIGHT_SHIFT expr 
 	expr:  expr.POW expr 
 
-	LBRACE  shift 124
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
+	LBRACE  shift 154
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
 	.  error
 
 
-state 68
-	statement:  RETURN expr.    (41)
+state 78
+	statement:  RETURN expr.    (61)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
 	expr:  expr.ADD expr 
@@ -1035,29 +1325,29 @@ state 68
 	expr:  expr.RIGHT_SHIFT expr 
 	expr:  expr.POW expr 
 
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 41 (src line 212)
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 61 (src line 245)
 
 
-state 69
+state 79
 	statement:  WHILE expr.LBRACE statements RBRACE 
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -1079,50 +1369,50 @@ state 69
 	expr:  expr.RIGHT_SHIFT expr 
 	expr:  expr.POW expr 
 
-	LBRACE  shift 125
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
+	LBRACE  shift 155
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
 	.  error
 
 
-state 70
+state 80
 	statement:  FUNC CALL.par_declarations RPAREN LBRACE statements RBRACE 
-	par_declarations: .    (92)
+	par_declarations: .    (112)
 
-	IDENT  shift 129
-	.  reduce 92 (src line 283)
+	IDENT  shift 159
+	.  reduce 112 (src line 321)
 
-	ident_list  goto 128
-	par_declaration  goto 127
-	par_declarations  goto 126
+	ident_list  goto 158
+	par_declaration  goto 157
+	par_declarations  goto 156
 
-state 71
+state 81
 	params:  params.COMMA expr 
 	statement:  CALL params.RPAREN 
 
-	COMMA  shift 130
-	RPAREN  shift 131
+	COMMA  shift 160
+	RPAREN  shift 161
 	.  error
 
 
-state 72
+state 82
 	params:  expr.    (6)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -1144,55 +1434,55 @@ state 72
 	expr:  expr.RIGHT_SHIFT expr 
 	expr:  expr.POW expr 
 
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
 	.  reduce 6 (src line 152)
 
 
-state 73
+state 83
 	cntparams:  cntparams.COMMA IDENT COLON expr 
 	statement:  CALLCONTRACT cntparams.RPAREN 
 
-	COMMA  shift 132
-	RPAREN  shift 133
+	COMMA  shift 162
+	RPAREN  shift 163
 	.  error
 
 
-state 74
+state 84
 	cntparams:  IDENT.COLON expr 
 
-	COLON  shift 134
+	COLON  shift 164
 	.  error
 
 
-state 75
+state 85
 	statement:  FOR IDENT.IN expr LBRACE statements RBRACE 
 	statement:  FOR IDENT.COMMA IDENT IN expr LBRACE statements RBRACE 
 	statement:  FOR IDENT.IN expr DOUBLEDOT expr LBRACE statements RBRACE 
 
-	COMMA  shift 136
-	IN  shift 135
+	COMMA  shift 166
+	IN  shift 165
 	.  error
 
 
-state 76
+state 86
 	index:  INDEX expr.RBRACKET 
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -1214,61 +1504,61 @@ state 76
 	expr:  expr.RIGHT_SHIFT expr 
 	expr:  expr.POW expr 
 
-	RBRACKET  shift 137
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
+	RBRACKET  shift 167
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
 	.  error
 
 
-state 77
+state 87
 	var_declarations:  var_declarations.NEWLINE var_declaration 
 	contract_data:  DATA LBRACE NEWLINE var_declarations.NEWLINE RBRACE NEWLINE 
 
-	NEWLINE  shift 138
+	NEWLINE  shift 168
 	.  error
 
 
-state 78
-	var_declarations:  var_declaration.    (97)
+state 88
+	var_declarations:  var_declaration.    (117)
 
-	.  reduce 97 (src line 294)
+	.  reduce 117 (src line 332)
 
 
-state 79
+state 89
 	var_declaration:  VAR.ident_list 
 	var_declaration:  VAR.IDENT ASSIGN expr 
 
-	IDENT  shift 140
+	IDENT  shift 170
 	.  error
 
-	ident_list  goto 139
+	ident_list  goto 169
 
-state 80
+state 90
 	switch:  SWITCH expr NEWLINE.case default 
 	case: .    (18)
 
 	.  reduce 18 (src line 179)
 
-	case  goto 141
+	case  goto 171
 
-state 81
+state 91
 	expr:  expr MUL.expr 
 
 	IDENT  shift 47
@@ -1289,10 +1579,10 @@ state 81
 	NOT  shift 51
 	.  error
 
-	expr  goto 142
+	expr  goto 172
 	index  goto 45
 
-state 82
+state 92
 	expr:  expr DIV.expr 
 
 	IDENT  shift 47
@@ -1313,10 +1603,10 @@ state 82
 	NOT  shift 51
 	.  error
 
-	expr  goto 143
+	expr  goto 173
 	index  goto 45
 
-state 83
+state 93
 	expr:  expr ADD.expr 
 
 	IDENT  shift 47
@@ -1337,1226 +1627,11 @@ state 83
 	NOT  shift 51
 	.  error
 
-	expr  goto 144
-	index  goto 45
-
-state 84
-	expr:  expr SUB.expr 
-
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
-
-	expr  goto 145
-	index  goto 45
-
-state 85
-	expr:  expr MOD.expr 
-
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
-
-	expr  goto 146
-	index  goto 45
-
-state 86
-	expr:  expr AND.expr 
-
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
-
-	expr  goto 147
-	index  goto 45
-
-state 87
-	expr:  expr OR.expr 
-
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
-
-	expr  goto 148
-	index  goto 45
-
-state 88
-	expr:  expr EQ.expr 
-
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
-
-	expr  goto 149
-	index  goto 45
-
-state 89
-	expr:  expr NOT_EQ.expr 
-
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
-
-	expr  goto 150
-	index  goto 45
-
-state 90
-	expr:  expr LTE.expr 
-
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
-
-	expr  goto 151
-	index  goto 45
-
-state 91
-	expr:  expr GTE.expr 
-
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
-
-	expr  goto 152
-	index  goto 45
-
-state 92
-	expr:  expr LT.expr 
-
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
-
-	expr  goto 153
-	index  goto 45
-
-state 93
-	expr:  expr GT.expr 
-
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
-
-	expr  goto 154
+	expr  goto 174
 	index  goto 45
 
 state 94
-	expr:  expr BIT_AND.expr 
-
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
-
-	expr  goto 155
-	index  goto 45
-
-state 95
-	expr:  expr BIT_OR.expr 
-
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
-
-	expr  goto 156
-	index  goto 45
-
-state 96
-	expr:  expr BIT_XOR.expr 
-
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
-
-	expr  goto 157
-	index  goto 45
-
-state 97
-	expr:  expr LEFT_SHIFT.expr 
-
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
-
-	expr  goto 158
-	index  goto 45
-
-state 98
-	expr:  expr RIGHT_SHIFT.expr 
-
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
-
-	expr  goto 159
-	index  goto 45
-
-state 99
-	expr:  expr POW.expr 
-
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
-
-	expr  goto 160
-	index  goto 45
-
-state 100
-	expr:  LPAREN expr.RPAREN 
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	RPAREN  shift 161
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  error
-
-
-state 101
-	params:  params.COMMA expr 
-	expr:  CALL params.RPAREN 
-
-	COMMA  shift 130
-	RPAREN  shift 162
-	.  error
-
-
-state 102
-	cntparams:  cntparams.COMMA IDENT COLON expr 
-	expr:  CALLCONTRACT cntparams.RPAREN 
-
-	COMMA  shift 132
-	RPAREN  shift 163
-	.  error
-
-
-state 103
-	exprlist:  exprlist.COMMA expr 
-	expr:  LBRACKET exprlist.RBRACKET 
-
-	COMMA  shift 164
-	RBRACKET  shift 165
-	.  error
-
-
-state 104
-	exprlist:  expr.    (49)
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 49 (src line 224)
-
-
-state 105
-	exprmaplist:  exprmaplist.COMMA STRING COLON NEWLINE expr 
-	exprmaplist:  exprmaplist.COMMA STRING COLON expr 
-	expr:  LBRACE exprmaplist.RBRACE 
-
-	COMMA  shift 166
-	RBRACE  shift 167
-	.  error
-
-
-state 106
-	exprmaplist:  STRING.COLON expr 
-
-	COLON  shift 168
-	.  error
-
-
-state 107
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-	expr:  SUB expr.    (87)
-
-	.  reduce 87 (src line 270)
-
-
-state 108
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-	expr:  NOT expr.    (88)
-
-	.  reduce 88 (src line 271)
-
-
-state 109
-	statement:  variable ASSIGN expr.    (23)
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 23 (src line 193)
-
-
-state 110
-	statement:  variable ADD_ASSIGN expr.    (24)
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 24 (src line 195)
-
-
-state 111
-	statement:  variable SUB_ASSIGN expr.    (25)
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 25 (src line 196)
-
-
-state 112
-	statement:  variable MUL_ASSIGN expr.    (26)
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 26 (src line 197)
-
-
-state 113
-	statement:  variable DIV_ASSIGN expr.    (27)
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 27 (src line 198)
-
-
-state 114
-	statement:  variable MOD_ASSIGN expr.    (28)
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 28 (src line 199)
-
-
-state 115
-	statement:  variable LEFT_SHIFT_ASSIGN expr.    (29)
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 29 (src line 200)
-
-
-state 116
-	statement:  variable RIGHT_SHIFT_ASSIGN expr.    (30)
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 30 (src line 201)
-
-
-state 117
-	statement:  variable BIT_AND_ASSIGN expr.    (31)
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 31 (src line 202)
-
-
-state 118
-	statement:  variable BIT_XOR_ASSIGN expr.    (32)
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 32 (src line 203)
-
-
-state 119
-	statement:  variable BIT_OR_ASSIGN expr.    (33)
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 33 (src line 204)
-
-
-state 120
-	index:  index LBRACKET expr.RBRACKET 
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	RBRACKET  shift 169
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  error
-
-
-state 121
-	statement:  index ASSIGN expr.    (34)
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 34 (src line 205)
-
-
-state 122
-	statement:  VAR IDENT ASSIGN.expr 
-
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
-
-	expr  goto 170
-	index  goto 45
-
-state 123
-	ident_list:  ident_list IDENT.    (90)
-
-	.  reduce 90 (src line 276)
-
-
-state 124
-	statement:  IF expr LBRACE.statements RBRACE elif else 
-	statements: .    (1)
-
-	.  reduce 1 (src line 143)
-
-	statements  goto 171
-
-state 125
-	statement:  WHILE expr LBRACE.statements RBRACE 
-	statements: .    (1)
-
-	.  reduce 1 (src line 143)
-
-	statements  goto 172
-
-state 126
-	statement:  FUNC CALL par_declarations.RPAREN LBRACE statements RBRACE 
-	par_declarations:  par_declarations.COMMA par_declaration 
-
-	COMMA  shift 174
-	RPAREN  shift 173
-	.  error
-
-
-state 127
-	par_declarations:  par_declaration.    (93)
-
-	.  reduce 93 (src line 285)
-
-
-state 128
-	ident_list:  ident_list.IDENT 
-	par_declaration:  ident_list.    (91)
-
-	IDENT  shift 123
-	.  reduce 91 (src line 279)
-
-
-state 129
-	ident_list:  IDENT.    (89)
-
-	.  reduce 89 (src line 274)
-
-
-state 130
-	params:  params COMMA.expr 
+	expr:  expr SUB.expr 
 
 	IDENT  shift 47
 	ENV  shift 46
@@ -2579,27 +1654,32 @@ state 130
 	expr  goto 175
 	index  goto 45
 
-state 131
-	statement:  CALL params RPAREN.    (44)
+state 95
+	expr:  expr MOD.expr 
 
-	.  reduce 44 (src line 217)
-
-
-state 132
-	cntparams:  cntparams COMMA.IDENT COLON expr 
-
-	IDENT  shift 176
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
 	.  error
 
+	expr  goto 176
+	index  goto 45
 
-state 133
-	statement:  CALLCONTRACT cntparams RPAREN.    (45)
-
-	.  reduce 45 (src line 218)
-
-
-state 134
-	cntparams:  IDENT COLON.expr 
+state 96
+	expr:  expr AND.expr 
 
 	IDENT  shift 47
 	ENV  shift 46
@@ -2622,9 +1702,8 @@ state 134
 	expr  goto 177
 	index  goto 45
 
-state 135
-	statement:  FOR IDENT IN.expr LBRACE statements RBRACE 
-	statement:  FOR IDENT IN.expr DOUBLEDOT expr LBRACE statements RBRACE 
+state 97
+	expr:  expr OR.expr 
 
 	IDENT  shift 47
 	ENV  shift 46
@@ -2647,679 +1726,176 @@ state 135
 	expr  goto 178
 	index  goto 45
 
-state 136
-	statement:  FOR IDENT COMMA.IDENT IN expr LBRACE statements RBRACE 
+state 98
+	expr:  expr EQ.expr 
 
-	IDENT  shift 179
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
 	.  error
 
+	expr  goto 179
+	index  goto 45
 
-state 137
-	index:  INDEX expr RBRACKET.    (12)
+state 99
+	expr:  expr NOT_EQ.expr 
 
-	.  reduce 12 (src line 165)
-
-
-state 138
-	var_declarations:  var_declarations NEWLINE.var_declaration 
-	contract_data:  DATA LBRACE NEWLINE var_declarations NEWLINE.RBRACE NEWLINE 
-
-	RBRACE  shift 181
-	VAR  shift 79
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
 	.  error
 
-	var_declaration  goto 180
-
-state 139
-	ident_list:  ident_list.IDENT 
-	var_declaration:  VAR ident_list.    (95)
-
-	IDENT  shift 123
-	.  reduce 95 (src line 289)
-
-
-state 140
-	ident_list:  IDENT.    (89)
-	var_declaration:  VAR IDENT.ASSIGN expr 
-
-	ASSIGN  shift 182
-	.  reduce 89 (src line 274)
-
-
-state 141
-	case:  case.CASE exprlist LBRACE statements RBRACE NEWLINE 
-	switch:  SWITCH expr NEWLINE case.default 
-	default: .    (20)
-
-	CASE  shift 183
-	DEFAULT  shift 185
-	.  reduce 20 (src line 184)
-
-	default  goto 184
-
-state 142
-	expr:  expr.MUL expr 
-	expr:  expr MUL expr.    (68)
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	POW  shift 99
-	.  reduce 68 (src line 250)
-
-
-state 143
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr DIV expr.    (69)
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	POW  shift 99
-	.  reduce 69 (src line 251)
-
-
-state 144
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr ADD expr.    (70)
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	.  reduce 70 (src line 252)
-
-
-state 145
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr SUB expr.    (71)
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	.  reduce 71 (src line 253)
-
-
-state 146
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr MOD expr.    (72)
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	POW  shift 99
-	.  reduce 72 (src line 254)
-
-
-state 147
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr AND expr.    (73)
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 73 (src line 255)
-
-
-state 148
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr OR expr.    (74)
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 74 (src line 256)
-
-
-state 149
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr EQ expr.    (75)
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	.  reduce 75 (src line 257)
-
-
-state 150
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr NOT_EQ expr.    (76)
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	.  reduce 76 (src line 258)
-
-
-state 151
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr LTE expr.    (77)
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	.  reduce 77 (src line 259)
-
-
-state 152
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr GTE expr.    (78)
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	.  reduce 78 (src line 260)
-
-
-state 153
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr LT expr.    (79)
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	.  reduce 79 (src line 261)
-
-
-state 154
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr GT expr.    (80)
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	.  reduce 80 (src line 262)
-
-
-state 155
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr BIT_AND expr.    (81)
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	POW  shift 99
-	.  reduce 81 (src line 263)
-
-
-state 156
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr BIT_OR expr.    (82)
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	POW  shift 99
-	.  reduce 82 (src line 264)
-
-
-state 157
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr BIT_XOR expr.    (83)
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	POW  shift 99
-	.  reduce 83 (src line 265)
-
-
-state 158
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr LEFT_SHIFT expr.    (84)
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	POW  shift 99
-	.  reduce 84 (src line 266)
-
-
-state 159
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr RIGHT_SHIFT expr.    (85)
-	expr:  expr.POW expr 
-
-	POW  shift 99
-	.  reduce 85 (src line 267)
-
-
-state 160
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-	expr:  expr POW expr.    (86)
-
-	POW  shift 99
-	.  reduce 86 (src line 268)
-
-
-state 161
-	expr:  LPAREN expr RPAREN.    (54)
-
-	.  reduce 54 (src line 235)
-
-
-state 162
-	expr:  CALL params RPAREN.    (61)
-
-	.  reduce 61 (src line 243)
-
-
-state 163
-	expr:  CALLCONTRACT cntparams RPAREN.    (62)
-
-	.  reduce 62 (src line 244)
-
-
-state 164
-	exprlist:  exprlist COMMA.expr 
+	expr  goto 180
+	index  goto 45
+
+state 100
+	expr:  expr LTE.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 181
+	index  goto 45
+
+state 101
+	expr:  expr GTE.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 182
+	index  goto 45
+
+state 102
+	expr:  expr LT.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 183
+	index  goto 45
+
+state 103
+	expr:  expr GT.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 184
+	index  goto 45
+
+state 104
+	expr:  expr BIT_AND.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 185
+	index  goto 45
+
+state 105
+	expr:  expr BIT_OR.expr 
 
 	IDENT  shift 47
 	ENV  shift 46
@@ -3342,28 +1918,32 @@ state 164
 	expr  goto 186
 	index  goto 45
 
-state 165
-	expr:  LBRACKET exprlist RBRACKET.    (66)
+state 106
+	expr:  expr BIT_XOR.expr 
 
-	.  reduce 66 (src line 248)
-
-
-state 166
-	exprmaplist:  exprmaplist COMMA.STRING COLON NEWLINE expr 
-	exprmaplist:  exprmaplist COMMA.STRING COLON expr 
-
-	STRING  shift 187
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
 	.  error
 
+	expr  goto 187
+	index  goto 45
 
-state 167
-	expr:  LBRACE exprmaplist RBRACE.    (67)
-
-	.  reduce 67 (src line 249)
-
-
-state 168
-	exprmaplist:  STRING COLON.expr 
+state 107
+	expr:  expr LEFT_SHIFT.expr 
 
 	IDENT  shift 47
 	ENV  shift 46
@@ -3386,292 +1966,8 @@ state 168
 	expr  goto 188
 	index  goto 45
 
-state 169
-	index:  index LBRACKET expr RBRACKET.    (13)
-
-	.  reduce 13 (src line 167)
-
-
-state 170
-	statement:  VAR IDENT ASSIGN expr.    (35)
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 35 (src line 206)
-
-
-state 171
-	statements:  statements.NEWLINE 
-	statements:  statements.switch 
-	statements:  statements.statement NEWLINE 
-	statement:  IF expr LBRACE statements.RBRACE elif else 
-
-	IDENT  shift 31
-	CALL  shift 28
-	CALLCONTRACT  shift 29
-	INDEX  shift 32
-	NEWLINE  shift 15
-	RBRACE  shift 189
-	BREAK  shift 23
-	CONTINUE  shift 24
-	IF  shift 22
-	RETURN  shift 25
-	WHILE  shift 26
-	FUNC  shift 27
-	FOR  shift 30
-	SWITCH  shift 18
-	VAR  shift 21
-	.  error
-
-	variable  goto 19
-	switch  goto 16
-	statement  goto 17
-	index  goto 20
-
-state 172
-	statements:  statements.NEWLINE 
-	statements:  statements.switch 
-	statements:  statements.statement NEWLINE 
-	statement:  WHILE expr LBRACE statements.RBRACE 
-
-	IDENT  shift 31
-	CALL  shift 28
-	CALLCONTRACT  shift 29
-	INDEX  shift 32
-	NEWLINE  shift 15
-	RBRACE  shift 190
-	BREAK  shift 23
-	CONTINUE  shift 24
-	IF  shift 22
-	RETURN  shift 25
-	WHILE  shift 26
-	FUNC  shift 27
-	FOR  shift 30
-	SWITCH  shift 18
-	VAR  shift 21
-	.  error
-
-	variable  goto 19
-	switch  goto 16
-	statement  goto 17
-	index  goto 20
-
-state 173
-	statement:  FUNC CALL par_declarations RPAREN.LBRACE statements RBRACE 
-
-	LBRACE  shift 191
-	.  error
-
-
-state 174
-	par_declarations:  par_declarations COMMA.par_declaration 
-
-	IDENT  shift 129
-	.  error
-
-	ident_list  goto 128
-	par_declaration  goto 192
-
-state 175
-	params:  params COMMA expr.    (7)
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 7 (src line 153)
-
-
-state 176
-	cntparams:  cntparams COMMA IDENT.COLON expr 
-
-	COLON  shift 193
-	.  error
-
-
-state 177
-	cntparams:  IDENT COLON expr.    (9)
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 9 (src line 158)
-
-
-state 178
-	statement:  FOR IDENT IN expr.LBRACE statements RBRACE 
-	statement:  FOR IDENT IN expr.DOUBLEDOT expr LBRACE statements RBRACE 
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	LBRACE  shift 194
-	DOUBLEDOT  shift 195
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  error
-
-
-state 179
-	statement:  FOR IDENT COMMA IDENT.IN expr LBRACE statements RBRACE 
-
-	IN  shift 196
-	.  error
-
-
-state 180
-	var_declarations:  var_declarations NEWLINE var_declaration.    (98)
-
-	.  reduce 98 (src line 296)
-
-
-state 181
-	contract_data:  DATA LBRACE NEWLINE var_declarations NEWLINE RBRACE.NEWLINE 
-
-	NEWLINE  shift 197
-	.  error
-
-
-state 182
-	var_declaration:  VAR IDENT ASSIGN.expr 
+state 108
+	expr:  expr RIGHT_SHIFT.expr 
 
 	IDENT  shift 47
 	ENV  shift 46
@@ -3691,11 +1987,11 @@ state 182
 	NOT  shift 51
 	.  error
 
-	expr  goto 198
+	expr  goto 189
 	index  goto 45
 
-state 183
-	case:  case CASE.exprlist LBRACE statements RBRACE NEWLINE 
+state 109
+	expr:  expr POW.expr 
 
 	IDENT  shift 47
 	ENV  shift 46
@@ -3715,25 +2011,11 @@ state 183
 	NOT  shift 51
 	.  error
 
-	expr  goto 104
+	expr  goto 190
 	index  goto 45
-	exprlist  goto 199
 
-state 184
-	switch:  SWITCH expr NEWLINE case default.    (22)
-
-	.  reduce 22 (src line 189)
-
-
-state 185
-	default:  DEFAULT.LBRACE statements RBRACE 
-
-	LBRACE  shift 200
-	.  error
-
-
-state 186
-	exprlist:  exprlist COMMA expr.    (50)
+state 110
+	expr:  LPAREN expr.RPAREN 
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
 	expr:  expr.ADD expr 
@@ -3754,38 +2036,58 @@ state 186
 	expr:  expr.RIGHT_SHIFT expr 
 	expr:  expr.POW expr 
 
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 50 (src line 226)
-
-
-state 187
-	exprmaplist:  exprmaplist COMMA STRING.COLON NEWLINE expr 
-	exprmaplist:  exprmaplist COMMA STRING.COLON expr 
-
-	COLON  shift 201
+	RPAREN  shift 191
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
 	.  error
 
 
-state 188
-	exprmaplist:  STRING COLON expr.    (51)
+state 111
+	params:  params.COMMA expr 
+	expr:  CALL params.RPAREN 
+
+	COMMA  shift 160
+	RPAREN  shift 192
+	.  error
+
+
+state 112
+	cntparams:  cntparams.COMMA IDENT COLON expr 
+	expr:  CALLCONTRACT cntparams.RPAREN 
+
+	COMMA  shift 162
+	RPAREN  shift 193
+	.  error
+
+
+state 113
+	exprlist:  exprlist.COMMA expr 
+	expr:  LBRACKET exprlist.RBRACKET 
+
+	COMMA  shift 194
+	RBRACKET  shift 195
+	.  error
+
+
+state 114
+	exprlist:  expr.    (69)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
 	expr:  expr.ADD expr 
@@ -3806,58 +2108,1206 @@ state 188
 	expr:  expr.RIGHT_SHIFT expr 
 	expr:  expr.POW expr 
 
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 51 (src line 229)
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 69 (src line 259)
 
 
-state 189
-	statement:  IF expr LBRACE statements RBRACE.elif else 
-	elif: .    (16)
+state 115
+	exprmaplist:  exprmaplist.COMMA STRING COLON NEWLINE expr 
+	exprmaplist:  exprmaplist.COMMA STRING COLON expr 
+	expr:  LBRACE exprmaplist.RBRACE 
 
-	.  reduce 16 (src line 174)
-
-	elif  goto 202
-
-state 190
-	statement:  WHILE expr LBRACE statements RBRACE.    (42)
-
-	.  reduce 42 (src line 213)
+	COMMA  shift 196
+	RBRACE  shift 197
+	.  error
 
 
-state 191
-	statement:  FUNC CALL par_declarations RPAREN LBRACE.statements RBRACE 
-	statements: .    (1)
+state 116
+	exprmaplist:  STRING.COLON expr 
 
-	.  reduce 1 (src line 143)
-
-	statements  goto 203
-
-state 192
-	par_declarations:  par_declarations COMMA par_declaration.    (94)
-
-	.  reduce 94 (src line 286)
+	COLON  shift 198
+	.  error
 
 
-state 193
-	cntparams:  cntparams COMMA IDENT COLON.expr 
+state 117
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+	expr:  SUB expr.    (107)
+
+	.  reduce 107 (src line 308)
+
+
+state 118
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+	expr:  NOT expr.    (108)
+
+	.  reduce 108 (src line 309)
+
+
+state 119
+	statement:  variable ASSIGN expr.    (23)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 23 (src line 193)
+
+
+state 120
+	statement:  variable ADD_ASSIGN expr.    (26)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 26 (src line 198)
+
+
+state 121
+	statement:  variable SUB_ASSIGN expr.    (29)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 29 (src line 202)
+
+
+state 122
+	statement:  variable MUL_ASSIGN expr.    (32)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 32 (src line 206)
+
+
+state 123
+	statement:  variable DIV_ASSIGN expr.    (35)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 35 (src line 211)
+
+
+state 124
+	statement:  variable MOD_ASSIGN expr.    (38)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 38 (src line 215)
+
+
+state 125
+	statement:  variable LEFT_SHIFT_ASSIGN expr.    (41)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 41 (src line 219)
+
+
+state 126
+	statement:  variable RIGHT_SHIFT_ASSIGN expr.    (44)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 44 (src line 223)
+
+
+state 127
+	statement:  variable BIT_AND_ASSIGN expr.    (47)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 47 (src line 227)
+
+
+state 128
+	statement:  variable BIT_XOR_ASSIGN expr.    (50)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 50 (src line 231)
+
+
+state 129
+	statement:  variable BIT_OR_ASSIGN expr.    (53)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 53 (src line 235)
+
+
+state 130
+	index:  index LBRACKET expr.RBRACKET 
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	RBRACKET  shift 199
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  error
+
+
+state 131
+	statement:  index ASSIGN expr.    (24)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 24 (src line 195)
+
+
+state 132
+	statement:  index ADD_ASSIGN expr.    (27)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 27 (src line 199)
+
+
+state 133
+	statement:  index SUB_ASSIGN expr.    (30)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 30 (src line 203)
+
+
+state 134
+	statement:  index MUL_ASSIGN expr.    (33)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 33 (src line 207)
+
+
+state 135
+	statement:  index DIV_ASSIGN expr.    (36)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 36 (src line 212)
+
+
+state 136
+	statement:  index MOD_ASSIGN expr.    (39)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 39 (src line 216)
+
+
+state 137
+	statement:  index LEFT_SHIFT_ASSIGN expr.    (42)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 42 (src line 220)
+
+
+state 138
+	statement:  index RIGHT_SHIFT_ASSIGN expr.    (45)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 45 (src line 224)
+
+
+state 139
+	statement:  index BIT_AND_ASSIGN expr.    (48)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 48 (src line 228)
+
+
+state 140
+	statement:  index BIT_XOR_ASSIGN expr.    (51)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 51 (src line 232)
+
+
+state 141
+	statement:  index BIT_OR_ASSIGN expr.    (54)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 54 (src line 236)
+
+
+state 142
+	statement:  VAR IDENT ASSIGN.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 200
+	index  goto 45
+
+state 143
+	statement:  VAR IDENT ADD_ASSIGN.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 201
+	index  goto 45
+
+state 144
+	statement:  VAR IDENT SUB_ASSIGN.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 202
+	index  goto 45
+
+state 145
+	statement:  VAR IDENT MUL_ASSIGN.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 203
+	index  goto 45
+
+state 146
+	statement:  VAR IDENT DIV_ASSIGN.expr 
 
 	IDENT  shift 47
 	ENV  shift 46
@@ -3880,16 +3330,32 @@ state 193
 	expr  goto 204
 	index  goto 45
 
-state 194
-	statement:  FOR IDENT IN expr LBRACE.statements RBRACE 
-	statements: .    (1)
+state 147
+	statement:  VAR IDENT MOD_ASSIGN.expr 
 
-	.  reduce 1 (src line 143)
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
 
-	statements  goto 205
+	expr  goto 205
+	index  goto 45
 
-state 195
-	statement:  FOR IDENT IN expr DOUBLEDOT.expr LBRACE statements RBRACE 
+state 148
+	statement:  VAR IDENT LEFT_SHIFT_ASSIGN.expr 
 
 	IDENT  shift 47
 	ENV  shift 46
@@ -3912,8 +3378,8 @@ state 195
 	expr  goto 206
 	index  goto 45
 
-state 196
-	statement:  FOR IDENT COMMA IDENT IN.expr LBRACE statements RBRACE 
+state 149
+	statement:  VAR IDENT RIGHT_SHIFT_ASSIGN.expr 
 
 	IDENT  shift 47
 	ENV  shift 46
@@ -3936,140 +3402,968 @@ state 196
 	expr  goto 207
 	index  goto 45
 
-state 197
-	contract_data:  DATA LBRACE NEWLINE var_declarations NEWLINE RBRACE NEWLINE.    (100)
+state 150
+	statement:  VAR IDENT BIT_AND_ASSIGN.expr 
 
-	.  reduce 100 (src line 301)
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 208
+	index  goto 45
+
+state 151
+	statement:  VAR IDENT BIT_XOR_ASSIGN.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 209
+	index  goto 45
+
+state 152
+	statement:  VAR IDENT BIT_OR_ASSIGN.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 210
+	index  goto 45
+
+state 153
+	ident_list:  ident_list IDENT.    (110)
+
+	.  reduce 110 (src line 314)
+
+
+state 154
+	statement:  IF expr LBRACE.statements RBRACE elif else 
+	statements: .    (1)
+
+	.  reduce 1 (src line 143)
+
+	statements  goto 211
+
+state 155
+	statement:  WHILE expr LBRACE.statements RBRACE 
+	statements: .    (1)
+
+	.  reduce 1 (src line 143)
+
+	statements  goto 212
+
+state 156
+	statement:  FUNC CALL par_declarations.RPAREN LBRACE statements RBRACE 
+	par_declarations:  par_declarations.COMMA par_declaration 
+
+	COMMA  shift 214
+	RPAREN  shift 213
+	.  error
+
+
+state 157
+	par_declarations:  par_declaration.    (113)
+
+	.  reduce 113 (src line 323)
+
+
+state 158
+	ident_list:  ident_list.IDENT 
+	par_declaration:  ident_list.    (111)
+
+	IDENT  shift 153
+	.  reduce 111 (src line 317)
+
+
+state 159
+	ident_list:  IDENT.    (109)
+
+	.  reduce 109 (src line 312)
+
+
+state 160
+	params:  params COMMA.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 215
+	index  goto 45
+
+state 161
+	statement:  CALL params RPAREN.    (64)
+
+	.  reduce 64 (src line 251)
+
+
+state 162
+	cntparams:  cntparams COMMA.IDENT COLON expr 
+
+	IDENT  shift 216
+	.  error
+
+
+state 163
+	statement:  CALLCONTRACT cntparams RPAREN.    (65)
+
+	.  reduce 65 (src line 252)
+
+
+state 164
+	cntparams:  IDENT COLON.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 217
+	index  goto 45
+
+state 165
+	statement:  FOR IDENT IN.expr LBRACE statements RBRACE 
+	statement:  FOR IDENT IN.expr DOUBLEDOT expr LBRACE statements RBRACE 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 218
+	index  goto 45
+
+state 166
+	statement:  FOR IDENT COMMA.IDENT IN expr LBRACE statements RBRACE 
+
+	IDENT  shift 219
+	.  error
+
+
+state 167
+	index:  INDEX expr RBRACKET.    (12)
+
+	.  reduce 12 (src line 165)
+
+
+state 168
+	var_declarations:  var_declarations NEWLINE.var_declaration 
+	contract_data:  DATA LBRACE NEWLINE var_declarations NEWLINE.RBRACE NEWLINE 
+
+	RBRACE  shift 221
+	VAR  shift 89
+	.  error
+
+	var_declaration  goto 220
+
+state 169
+	ident_list:  ident_list.IDENT 
+	var_declaration:  VAR ident_list.    (115)
+
+	IDENT  shift 153
+	.  reduce 115 (src line 327)
+
+
+state 170
+	ident_list:  IDENT.    (109)
+	var_declaration:  VAR IDENT.ASSIGN expr 
+
+	ASSIGN  shift 222
+	.  reduce 109 (src line 312)
+
+
+state 171
+	case:  case.CASE exprlist LBRACE statements RBRACE NEWLINE 
+	switch:  SWITCH expr NEWLINE case.default 
+	default: .    (20)
+
+	CASE  shift 223
+	DEFAULT  shift 225
+	.  reduce 20 (src line 184)
+
+	default  goto 224
+
+state 172
+	expr:  expr.MUL expr 
+	expr:  expr MUL expr.    (88)
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	POW  shift 109
+	.  reduce 88 (src line 288)
+
+
+state 173
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr DIV expr.    (89)
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	POW  shift 109
+	.  reduce 89 (src line 289)
+
+
+state 174
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr ADD expr.    (90)
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	.  reduce 90 (src line 290)
+
+
+state 175
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr SUB expr.    (91)
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	.  reduce 91 (src line 291)
+
+
+state 176
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr MOD expr.    (92)
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	POW  shift 109
+	.  reduce 92 (src line 292)
+
+
+state 177
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr AND expr.    (93)
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 93 (src line 293)
+
+
+state 178
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr OR expr.    (94)
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 94 (src line 294)
+
+
+state 179
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr EQ expr.    (95)
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	.  reduce 95 (src line 295)
+
+
+state 180
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr NOT_EQ expr.    (96)
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	.  reduce 96 (src line 296)
+
+
+state 181
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr LTE expr.    (97)
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	.  reduce 97 (src line 297)
+
+
+state 182
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr GTE expr.    (98)
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	.  reduce 98 (src line 298)
+
+
+state 183
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr LT expr.    (99)
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	.  reduce 99 (src line 299)
+
+
+state 184
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr GT expr.    (100)
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	.  reduce 100 (src line 300)
+
+
+state 185
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr BIT_AND expr.    (101)
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	POW  shift 109
+	.  reduce 101 (src line 301)
+
+
+state 186
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr BIT_OR expr.    (102)
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	POW  shift 109
+	.  reduce 102 (src line 302)
+
+
+state 187
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr BIT_XOR expr.    (103)
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	POW  shift 109
+	.  reduce 103 (src line 303)
+
+
+state 188
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr LEFT_SHIFT expr.    (104)
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	POW  shift 109
+	.  reduce 104 (src line 304)
+
+
+state 189
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr RIGHT_SHIFT expr.    (105)
+	expr:  expr.POW expr 
+
+	POW  shift 109
+	.  reduce 105 (src line 305)
+
+
+state 190
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+	expr:  expr POW expr.    (106)
+
+	POW  shift 109
+	.  reduce 106 (src line 306)
+
+
+state 191
+	expr:  LPAREN expr RPAREN.    (74)
+
+	.  reduce 74 (src line 270)
+
+
+state 192
+	expr:  CALL params RPAREN.    (81)
+
+	.  reduce 81 (src line 279)
+
+
+state 193
+	expr:  CALLCONTRACT cntparams RPAREN.    (82)
+
+	.  reduce 82 (src line 280)
+
+
+state 194
+	exprlist:  exprlist COMMA.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 226
+	index  goto 45
+
+state 195
+	expr:  LBRACKET exprlist RBRACKET.    (86)
+
+	.  reduce 86 (src line 285)
+
+
+state 196
+	exprmaplist:  exprmaplist COMMA.STRING COLON NEWLINE expr 
+	exprmaplist:  exprmaplist COMMA.STRING COLON expr 
+
+	STRING  shift 227
+	.  error
+
+
+state 197
+	expr:  LBRACE exprmaplist RBRACE.    (87)
+
+	.  reduce 87 (src line 286)
 
 
 state 198
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-	var_declaration:  VAR IDENT ASSIGN expr.    (96)
+	exprmaplist:  STRING COLON.expr 
 
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 96 (src line 291)
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
 
+	expr  goto 228
+	index  goto 45
 
 state 199
-	case:  case CASE exprlist.LBRACE statements RBRACE NEWLINE 
-	exprlist:  exprlist.COMMA expr 
+	index:  index LBRACKET expr RBRACKET.    (13)
 
-	COMMA  shift 164
-	LBRACE  shift 208
-	.  error
+	.  reduce 13 (src line 167)
 
 
 state 200
-	default:  DEFAULT LBRACE.statements RBRACE 
-	statements: .    (1)
-
-	.  reduce 1 (src line 143)
-
-	statements  goto 209
-
-state 201
-	exprmaplist:  exprmaplist COMMA STRING COLON.NEWLINE expr 
-	exprmaplist:  exprmaplist COMMA STRING COLON.expr 
-
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	NEWLINE  shift 210
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
-
-	expr  goto 211
-	index  goto 45
-
-state 202
-	elif:  elif.ELIF expr LBRACE statements RBRACE 
-	statement:  IF expr LBRACE statements RBRACE elif.else 
-	else: .    (14)
-
-	ELIF  shift 212
-	ELSE  shift 214
-	.  reduce 14 (src line 169)
-
-	else  goto 213
-
-state 203
-	statements:  statements.NEWLINE 
-	statements:  statements.switch 
-	statements:  statements.statement NEWLINE 
-	statement:  FUNC CALL par_declarations RPAREN LBRACE statements.RBRACE 
-
-	IDENT  shift 31
-	CALL  shift 28
-	CALLCONTRACT  shift 29
-	INDEX  shift 32
-	NEWLINE  shift 15
-	RBRACE  shift 215
-	BREAK  shift 23
-	CONTINUE  shift 24
-	IF  shift 22
-	RETURN  shift 25
-	WHILE  shift 26
-	FUNC  shift 27
-	FOR  shift 30
-	SWITCH  shift 18
-	VAR  shift 21
-	.  error
-
-	variable  goto 19
-	switch  goto 16
-	statement  goto 17
-	index  goto 20
-
-state 204
-	cntparams:  cntparams COMMA IDENT COLON expr.    (10)
+	statement:  VAR IDENT ASSIGN expr.    (25)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
 	expr:  expr.ADD expr 
@@ -4090,58 +4384,206 @@ state 204
 	expr:  expr.RIGHT_SHIFT expr 
 	expr:  expr.POW expr 
 
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 10 (src line 159)
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 25 (src line 196)
+
+
+state 201
+	statement:  VAR IDENT ADD_ASSIGN expr.    (28)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 28 (src line 200)
+
+
+state 202
+	statement:  VAR IDENT SUB_ASSIGN expr.    (31)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 31 (src line 204)
+
+
+state 203
+	statement:  VAR IDENT MUL_ASSIGN expr.    (34)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 34 (src line 208)
+
+
+state 204
+	statement:  VAR IDENT DIV_ASSIGN expr.    (37)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 37 (src line 213)
 
 
 state 205
-	statements:  statements.NEWLINE 
-	statements:  statements.switch 
-	statements:  statements.statement NEWLINE 
-	statement:  FOR IDENT IN expr LBRACE statements.RBRACE 
-
-	IDENT  shift 31
-	CALL  shift 28
-	CALLCONTRACT  shift 29
-	INDEX  shift 32
-	NEWLINE  shift 15
-	RBRACE  shift 216
-	BREAK  shift 23
-	CONTINUE  shift 24
-	IF  shift 22
-	RETURN  shift 25
-	WHILE  shift 26
-	FUNC  shift 27
-	FOR  shift 30
-	SWITCH  shift 18
-	VAR  shift 21
-	.  error
-
-	variable  goto 19
-	switch  goto 16
-	statement  goto 17
-	index  goto 20
-
-state 206
-	statement:  FOR IDENT IN expr DOUBLEDOT expr.LBRACE statements RBRACE 
+	statement:  VAR IDENT MOD_ASSIGN expr.    (40)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
 	expr:  expr.ADD expr 
@@ -4162,31 +4604,74 @@ state 206
 	expr:  expr.RIGHT_SHIFT expr 
 	expr:  expr.POW expr 
 
-	LBRACE  shift 217
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  error
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 40 (src line 217)
+
+
+state 206
+	statement:  VAR IDENT LEFT_SHIFT_ASSIGN expr.    (43)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 43 (src line 221)
 
 
 state 207
-	statement:  FOR IDENT COMMA IDENT IN expr.LBRACE statements RBRACE 
+	statement:  VAR IDENT RIGHT_SHIFT_ASSIGN expr.    (46)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
 	expr:  expr.ADD expr 
@@ -4207,334 +4692,165 @@ state 207
 	expr:  expr.RIGHT_SHIFT expr 
 	expr:  expr.POW expr 
 
-	LBRACE  shift 218
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  error
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 46 (src line 225)
 
 
 state 208
-	case:  case CASE exprlist LBRACE.statements RBRACE NEWLINE 
-	statements: .    (1)
+	statement:  VAR IDENT BIT_AND_ASSIGN expr.    (49)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
 
-	.  reduce 1 (src line 143)
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 49 (src line 229)
 
-	statements  goto 219
 
 state 209
-	statements:  statements.NEWLINE 
-	statements:  statements.switch 
-	statements:  statements.statement NEWLINE 
-	default:  DEFAULT LBRACE statements.RBRACE 
+	statement:  VAR IDENT BIT_XOR_ASSIGN expr.    (52)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
 
-	IDENT  shift 31
-	CALL  shift 28
-	CALLCONTRACT  shift 29
-	INDEX  shift 32
-	NEWLINE  shift 15
-	RBRACE  shift 220
-	BREAK  shift 23
-	CONTINUE  shift 24
-	IF  shift 22
-	RETURN  shift 25
-	WHILE  shift 26
-	FUNC  shift 27
-	FOR  shift 30
-	SWITCH  shift 18
-	VAR  shift 21
-	.  error
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 52 (src line 233)
 
-	variable  goto 19
-	switch  goto 16
-	statement  goto 17
-	index  goto 20
 
 state 210
-	exprmaplist:  exprmaplist COMMA STRING COLON NEWLINE.expr 
+	statement:  VAR IDENT BIT_OR_ASSIGN expr.    (55)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
 
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 55 (src line 237)
 
-	expr  goto 221
-	index  goto 45
 
 state 211
-	exprmaplist:  exprmaplist COMMA STRING COLON expr.    (53)
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 53 (src line 232)
-
-
-state 212
-	elif:  elif ELIF.expr LBRACE statements RBRACE 
-
-	IDENT  shift 47
-	ENV  shift 46
-	CALL  shift 43
-	CALLCONTRACT  shift 44
-	INDEX  shift 32
-	INT  shift 37
-	FLOAT  shift 38
-	STRING  shift 39
-	QSTRING  shift 40
-	TRUE  shift 41
-	FALSE  shift 42
-	LPAREN  shift 36
-	LBRACE  shift 49
-	LBRACKET  shift 48
-	SUB  shift 50
-	NOT  shift 51
-	.  error
-
-	expr  goto 222
-	index  goto 45
-
-state 213
-	statement:  IF expr LBRACE statements RBRACE elif else.    (37)
-
-	.  reduce 37 (src line 208)
-
-
-state 214
-	else:  ELSE.LBRACE statements RBRACE 
-
-	LBRACE  shift 223
-	.  error
-
-
-state 215
-	statement:  FUNC CALL par_declarations RPAREN LBRACE statements RBRACE.    (43)
-
-	.  reduce 43 (src line 214)
-
-
-state 216
-	statement:  FOR IDENT IN expr LBRACE statements RBRACE.    (46)
-
-	.  reduce 46 (src line 219)
-
-
-state 217
-	statement:  FOR IDENT IN expr DOUBLEDOT expr LBRACE.statements RBRACE 
-	statements: .    (1)
-
-	.  reduce 1 (src line 143)
-
-	statements  goto 224
-
-state 218
-	statement:  FOR IDENT COMMA IDENT IN expr LBRACE.statements RBRACE 
-	statements: .    (1)
-
-	.  reduce 1 (src line 143)
-
-	statements  goto 225
-
-state 219
 	statements:  statements.NEWLINE 
 	statements:  statements.switch 
 	statements:  statements.statement NEWLINE 
-	case:  case CASE exprlist LBRACE statements.RBRACE NEWLINE 
-
-	IDENT  shift 31
-	CALL  shift 28
-	CALLCONTRACT  shift 29
-	INDEX  shift 32
-	NEWLINE  shift 15
-	RBRACE  shift 226
-	BREAK  shift 23
-	CONTINUE  shift 24
-	IF  shift 22
-	RETURN  shift 25
-	WHILE  shift 26
-	FUNC  shift 27
-	FOR  shift 30
-	SWITCH  shift 18
-	VAR  shift 21
-	.  error
-
-	variable  goto 19
-	switch  goto 16
-	statement  goto 17
-	index  goto 20
-
-state 220
-	default:  DEFAULT LBRACE statements RBRACE.    (21)
-
-	.  reduce 21 (src line 186)
-
-
-state 221
-	exprmaplist:  exprmaplist COMMA STRING COLON NEWLINE expr.    (52)
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  reduce 52 (src line 231)
-
-
-state 222
-	elif:  elif ELIF expr.LBRACE statements RBRACE 
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  expr.BIT_AND expr 
-	expr:  expr.BIT_OR expr 
-	expr:  expr.BIT_XOR expr 
-	expr:  expr.LEFT_SHIFT expr 
-	expr:  expr.RIGHT_SHIFT expr 
-	expr:  expr.POW expr 
-
-	LBRACE  shift 227
-	ADD  shift 83
-	SUB  shift 84
-	MUL  shift 81
-	DIV  shift 82
-	MOD  shift 85
-	BIT_AND  shift 94
-	BIT_OR  shift 95
-	BIT_XOR  shift 96
-	LEFT_SHIFT  shift 97
-	RIGHT_SHIFT  shift 98
-	POW  shift 99
-	AND  shift 86
-	OR  shift 87
-	EQ  shift 88
-	NOT_EQ  shift 89
-	LT  shift 92
-	GT  shift 93
-	LTE  shift 90
-	GTE  shift 91
-	.  error
-
-
-state 223
-	else:  ELSE LBRACE.statements RBRACE 
-	statements: .    (1)
-
-	.  reduce 1 (src line 143)
-
-	statements  goto 228
-
-state 224
-	statements:  statements.NEWLINE 
-	statements:  statements.switch 
-	statements:  statements.statement NEWLINE 
-	statement:  FOR IDENT IN expr DOUBLEDOT expr LBRACE statements.RBRACE 
+	statement:  IF expr LBRACE statements.RBRACE elif else 
 
 	IDENT  shift 31
 	CALL  shift 28
@@ -4558,11 +4874,11 @@ state 224
 	statement  goto 17
 	index  goto 20
 
-state 225
+state 212
 	statements:  statements.NEWLINE 
 	statements:  statements.switch 
 	statements:  statements.statement NEWLINE 
-	statement:  FOR IDENT COMMA IDENT IN expr LBRACE statements.RBRACE 
+	statement:  WHILE expr LBRACE statements.RBRACE 
 
 	IDENT  shift 31
 	CALL  shift 28
@@ -4586,22 +4902,1116 @@ state 225
 	statement  goto 17
 	index  goto 20
 
-state 226
-	case:  case CASE exprlist LBRACE statements RBRACE.NEWLINE 
+state 213
+	statement:  FUNC CALL par_declarations RPAREN.LBRACE statements RBRACE 
 
-	NEWLINE  shift 231
+	LBRACE  shift 231
 	.  error
 
 
+state 214
+	par_declarations:  par_declarations COMMA.par_declaration 
+
+	IDENT  shift 159
+	.  error
+
+	ident_list  goto 158
+	par_declaration  goto 232
+
+state 215
+	params:  params COMMA expr.    (7)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 7 (src line 153)
+
+
+state 216
+	cntparams:  cntparams COMMA IDENT.COLON expr 
+
+	COLON  shift 233
+	.  error
+
+
+state 217
+	cntparams:  IDENT COLON expr.    (9)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 9 (src line 158)
+
+
+state 218
+	statement:  FOR IDENT IN expr.LBRACE statements RBRACE 
+	statement:  FOR IDENT IN expr.DOUBLEDOT expr LBRACE statements RBRACE 
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	LBRACE  shift 234
+	DOUBLEDOT  shift 235
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  error
+
+
+state 219
+	statement:  FOR IDENT COMMA IDENT.IN expr LBRACE statements RBRACE 
+
+	IN  shift 236
+	.  error
+
+
+state 220
+	var_declarations:  var_declarations NEWLINE var_declaration.    (118)
+
+	.  reduce 118 (src line 334)
+
+
+state 221
+	contract_data:  DATA LBRACE NEWLINE var_declarations NEWLINE RBRACE.NEWLINE 
+
+	NEWLINE  shift 237
+	.  error
+
+
+state 222
+	var_declaration:  VAR IDENT ASSIGN.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 238
+	index  goto 45
+
+state 223
+	case:  case CASE.exprlist LBRACE statements RBRACE NEWLINE 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 114
+	index  goto 45
+	exprlist  goto 239
+
+state 224
+	switch:  SWITCH expr NEWLINE case default.    (22)
+
+	.  reduce 22 (src line 189)
+
+
+state 225
+	default:  DEFAULT.LBRACE statements RBRACE 
+
+	LBRACE  shift 240
+	.  error
+
+
+state 226
+	exprlist:  exprlist COMMA expr.    (70)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 70 (src line 261)
+
+
 state 227
+	exprmaplist:  exprmaplist COMMA STRING.COLON NEWLINE expr 
+	exprmaplist:  exprmaplist COMMA STRING.COLON expr 
+
+	COLON  shift 241
+	.  error
+
+
+state 228
+	exprmaplist:  STRING COLON expr.    (71)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 71 (src line 264)
+
+
+state 229
+	statement:  IF expr LBRACE statements RBRACE.elif else 
+	elif: .    (16)
+
+	.  reduce 16 (src line 174)
+
+	elif  goto 242
+
+state 230
+	statement:  WHILE expr LBRACE statements RBRACE.    (62)
+
+	.  reduce 62 (src line 246)
+
+
+state 231
+	statement:  FUNC CALL par_declarations RPAREN LBRACE.statements RBRACE 
+	statements: .    (1)
+
+	.  reduce 1 (src line 143)
+
+	statements  goto 243
+
+state 232
+	par_declarations:  par_declarations COMMA par_declaration.    (114)
+
+	.  reduce 114 (src line 324)
+
+
+state 233
+	cntparams:  cntparams COMMA IDENT COLON.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 244
+	index  goto 45
+
+state 234
+	statement:  FOR IDENT IN expr LBRACE.statements RBRACE 
+	statements: .    (1)
+
+	.  reduce 1 (src line 143)
+
+	statements  goto 245
+
+state 235
+	statement:  FOR IDENT IN expr DOUBLEDOT.expr LBRACE statements RBRACE 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 246
+	index  goto 45
+
+state 236
+	statement:  FOR IDENT COMMA IDENT IN.expr LBRACE statements RBRACE 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 247
+	index  goto 45
+
+state 237
+	contract_data:  DATA LBRACE NEWLINE var_declarations NEWLINE RBRACE NEWLINE.    (120)
+
+	.  reduce 120 (src line 339)
+
+
+state 238
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+	var_declaration:  VAR IDENT ASSIGN expr.    (116)
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 116 (src line 329)
+
+
+state 239
+	case:  case CASE exprlist.LBRACE statements RBRACE NEWLINE 
+	exprlist:  exprlist.COMMA expr 
+
+	COMMA  shift 194
+	LBRACE  shift 248
+	.  error
+
+
+state 240
+	default:  DEFAULT LBRACE.statements RBRACE 
+	statements: .    (1)
+
+	.  reduce 1 (src line 143)
+
+	statements  goto 249
+
+state 241
+	exprmaplist:  exprmaplist COMMA STRING COLON.NEWLINE expr 
+	exprmaplist:  exprmaplist COMMA STRING COLON.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	NEWLINE  shift 250
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 251
+	index  goto 45
+
+state 242
+	elif:  elif.ELIF expr LBRACE statements RBRACE 
+	statement:  IF expr LBRACE statements RBRACE elif.else 
+	else: .    (14)
+
+	ELIF  shift 252
+	ELSE  shift 254
+	.  reduce 14 (src line 169)
+
+	else  goto 253
+
+state 243
+	statements:  statements.NEWLINE 
+	statements:  statements.switch 
+	statements:  statements.statement NEWLINE 
+	statement:  FUNC CALL par_declarations RPAREN LBRACE statements.RBRACE 
+
+	IDENT  shift 31
+	CALL  shift 28
+	CALLCONTRACT  shift 29
+	INDEX  shift 32
+	NEWLINE  shift 15
+	RBRACE  shift 255
+	BREAK  shift 23
+	CONTINUE  shift 24
+	IF  shift 22
+	RETURN  shift 25
+	WHILE  shift 26
+	FUNC  shift 27
+	FOR  shift 30
+	SWITCH  shift 18
+	VAR  shift 21
+	.  error
+
+	variable  goto 19
+	switch  goto 16
+	statement  goto 17
+	index  goto 20
+
+state 244
+	cntparams:  cntparams COMMA IDENT COLON expr.    (10)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 10 (src line 159)
+
+
+state 245
+	statements:  statements.NEWLINE 
+	statements:  statements.switch 
+	statements:  statements.statement NEWLINE 
+	statement:  FOR IDENT IN expr LBRACE statements.RBRACE 
+
+	IDENT  shift 31
+	CALL  shift 28
+	CALLCONTRACT  shift 29
+	INDEX  shift 32
+	NEWLINE  shift 15
+	RBRACE  shift 256
+	BREAK  shift 23
+	CONTINUE  shift 24
+	IF  shift 22
+	RETURN  shift 25
+	WHILE  shift 26
+	FUNC  shift 27
+	FOR  shift 30
+	SWITCH  shift 18
+	VAR  shift 21
+	.  error
+
+	variable  goto 19
+	switch  goto 16
+	statement  goto 17
+	index  goto 20
+
+state 246
+	statement:  FOR IDENT IN expr DOUBLEDOT expr.LBRACE statements RBRACE 
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	LBRACE  shift 257
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  error
+
+
+state 247
+	statement:  FOR IDENT COMMA IDENT IN expr.LBRACE statements RBRACE 
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	LBRACE  shift 258
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  error
+
+
+state 248
+	case:  case CASE exprlist LBRACE.statements RBRACE NEWLINE 
+	statements: .    (1)
+
+	.  reduce 1 (src line 143)
+
+	statements  goto 259
+
+state 249
+	statements:  statements.NEWLINE 
+	statements:  statements.switch 
+	statements:  statements.statement NEWLINE 
+	default:  DEFAULT LBRACE statements.RBRACE 
+
+	IDENT  shift 31
+	CALL  shift 28
+	CALLCONTRACT  shift 29
+	INDEX  shift 32
+	NEWLINE  shift 15
+	RBRACE  shift 260
+	BREAK  shift 23
+	CONTINUE  shift 24
+	IF  shift 22
+	RETURN  shift 25
+	WHILE  shift 26
+	FUNC  shift 27
+	FOR  shift 30
+	SWITCH  shift 18
+	VAR  shift 21
+	.  error
+
+	variable  goto 19
+	switch  goto 16
+	statement  goto 17
+	index  goto 20
+
+state 250
+	exprmaplist:  exprmaplist COMMA STRING COLON NEWLINE.expr 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 261
+	index  goto 45
+
+state 251
+	exprmaplist:  exprmaplist COMMA STRING COLON expr.    (73)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 73 (src line 267)
+
+
+state 252
+	elif:  elif ELIF.expr LBRACE statements RBRACE 
+
+	IDENT  shift 47
+	ENV  shift 46
+	CALL  shift 43
+	CALLCONTRACT  shift 44
+	INDEX  shift 32
+	INT  shift 37
+	FLOAT  shift 38
+	STRING  shift 39
+	QSTRING  shift 40
+	TRUE  shift 41
+	FALSE  shift 42
+	LPAREN  shift 36
+	LBRACE  shift 49
+	LBRACKET  shift 48
+	SUB  shift 50
+	NOT  shift 51
+	.  error
+
+	expr  goto 262
+	index  goto 45
+
+state 253
+	statement:  IF expr LBRACE statements RBRACE elif else.    (57)
+
+	.  reduce 57 (src line 241)
+
+
+state 254
+	else:  ELSE.LBRACE statements RBRACE 
+
+	LBRACE  shift 263
+	.  error
+
+
+state 255
+	statement:  FUNC CALL par_declarations RPAREN LBRACE statements RBRACE.    (63)
+
+	.  reduce 63 (src line 248)
+
+
+state 256
+	statement:  FOR IDENT IN expr LBRACE statements RBRACE.    (66)
+
+	.  reduce 66 (src line 254)
+
+
+state 257
+	statement:  FOR IDENT IN expr DOUBLEDOT expr LBRACE.statements RBRACE 
+	statements: .    (1)
+
+	.  reduce 1 (src line 143)
+
+	statements  goto 264
+
+state 258
+	statement:  FOR IDENT COMMA IDENT IN expr LBRACE.statements RBRACE 
+	statements: .    (1)
+
+	.  reduce 1 (src line 143)
+
+	statements  goto 265
+
+state 259
+	statements:  statements.NEWLINE 
+	statements:  statements.switch 
+	statements:  statements.statement NEWLINE 
+	case:  case CASE exprlist LBRACE statements.RBRACE NEWLINE 
+
+	IDENT  shift 31
+	CALL  shift 28
+	CALLCONTRACT  shift 29
+	INDEX  shift 32
+	NEWLINE  shift 15
+	RBRACE  shift 266
+	BREAK  shift 23
+	CONTINUE  shift 24
+	IF  shift 22
+	RETURN  shift 25
+	WHILE  shift 26
+	FUNC  shift 27
+	FOR  shift 30
+	SWITCH  shift 18
+	VAR  shift 21
+	.  error
+
+	variable  goto 19
+	switch  goto 16
+	statement  goto 17
+	index  goto 20
+
+state 260
+	default:  DEFAULT LBRACE statements RBRACE.    (21)
+
+	.  reduce 21 (src line 186)
+
+
+state 261
+	exprmaplist:  exprmaplist COMMA STRING COLON NEWLINE expr.    (72)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  reduce 72 (src line 266)
+
+
+state 262
+	elif:  elif ELIF expr.LBRACE statements RBRACE 
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr.BIT_AND expr 
+	expr:  expr.BIT_OR expr 
+	expr:  expr.BIT_XOR expr 
+	expr:  expr.LEFT_SHIFT expr 
+	expr:  expr.RIGHT_SHIFT expr 
+	expr:  expr.POW expr 
+
+	LBRACE  shift 267
+	ADD  shift 93
+	SUB  shift 94
+	MUL  shift 91
+	DIV  shift 92
+	MOD  shift 95
+	BIT_AND  shift 104
+	BIT_OR  shift 105
+	BIT_XOR  shift 106
+	LEFT_SHIFT  shift 107
+	RIGHT_SHIFT  shift 108
+	POW  shift 109
+	AND  shift 96
+	OR  shift 97
+	EQ  shift 98
+	NOT_EQ  shift 99
+	LT  shift 102
+	GT  shift 103
+	LTE  shift 100
+	GTE  shift 101
+	.  error
+
+
+state 263
+	else:  ELSE LBRACE.statements RBRACE 
+	statements: .    (1)
+
+	.  reduce 1 (src line 143)
+
+	statements  goto 268
+
+state 264
+	statements:  statements.NEWLINE 
+	statements:  statements.switch 
+	statements:  statements.statement NEWLINE 
+	statement:  FOR IDENT IN expr DOUBLEDOT expr LBRACE statements.RBRACE 
+
+	IDENT  shift 31
+	CALL  shift 28
+	CALLCONTRACT  shift 29
+	INDEX  shift 32
+	NEWLINE  shift 15
+	RBRACE  shift 269
+	BREAK  shift 23
+	CONTINUE  shift 24
+	IF  shift 22
+	RETURN  shift 25
+	WHILE  shift 26
+	FUNC  shift 27
+	FOR  shift 30
+	SWITCH  shift 18
+	VAR  shift 21
+	.  error
+
+	variable  goto 19
+	switch  goto 16
+	statement  goto 17
+	index  goto 20
+
+state 265
+	statements:  statements.NEWLINE 
+	statements:  statements.switch 
+	statements:  statements.statement NEWLINE 
+	statement:  FOR IDENT COMMA IDENT IN expr LBRACE statements.RBRACE 
+
+	IDENT  shift 31
+	CALL  shift 28
+	CALLCONTRACT  shift 29
+	INDEX  shift 32
+	NEWLINE  shift 15
+	RBRACE  shift 270
+	BREAK  shift 23
+	CONTINUE  shift 24
+	IF  shift 22
+	RETURN  shift 25
+	WHILE  shift 26
+	FUNC  shift 27
+	FOR  shift 30
+	SWITCH  shift 18
+	VAR  shift 21
+	.  error
+
+	variable  goto 19
+	switch  goto 16
+	statement  goto 17
+	index  goto 20
+
+state 266
+	case:  case CASE exprlist LBRACE statements RBRACE.NEWLINE 
+
+	NEWLINE  shift 271
+	.  error
+
+
+state 267
 	elif:  elif ELIF expr LBRACE.statements RBRACE 
 	statements: .    (1)
 
 	.  reduce 1 (src line 143)
 
-	statements  goto 232
+	statements  goto 272
 
-state 228
+state 268
 	statements:  statements.NEWLINE 
 	statements:  statements.switch 
 	statements:  statements.statement NEWLINE 
@@ -4612,7 +6022,7 @@ state 228
 	CALLCONTRACT  shift 29
 	INDEX  shift 32
 	NEWLINE  shift 15
-	RBRACE  shift 233
+	RBRACE  shift 273
 	BREAK  shift 23
 	CONTINUE  shift 24
 	IF  shift 22
@@ -4629,25 +6039,25 @@ state 228
 	statement  goto 17
 	index  goto 20
 
-state 229
-	statement:  FOR IDENT IN expr DOUBLEDOT expr LBRACE statements RBRACE.    (48)
+state 269
+	statement:  FOR IDENT IN expr DOUBLEDOT expr LBRACE statements RBRACE.    (68)
 
-	.  reduce 48 (src line 221)
-
-
-state 230
-	statement:  FOR IDENT COMMA IDENT IN expr LBRACE statements RBRACE.    (47)
-
-	.  reduce 47 (src line 220)
+	.  reduce 68 (src line 256)
 
 
-state 231
+state 270
+	statement:  FOR IDENT COMMA IDENT IN expr LBRACE statements RBRACE.    (67)
+
+	.  reduce 67 (src line 255)
+
+
+state 271
 	case:  case CASE exprlist LBRACE statements RBRACE NEWLINE.    (19)
 
 	.  reduce 19 (src line 181)
 
 
-state 232
+state 272
 	statements:  statements.NEWLINE 
 	statements:  statements.switch 
 	statements:  statements.statement NEWLINE 
@@ -4658,7 +6068,7 @@ state 232
 	CALLCONTRACT  shift 29
 	INDEX  shift 32
 	NEWLINE  shift 15
-	RBRACE  shift 234
+	RBRACE  shift 274
 	BREAK  shift 23
 	CONTINUE  shift 24
 	IF  shift 22
@@ -4675,27 +6085,27 @@ state 232
 	statement  goto 17
 	index  goto 20
 
-state 233
+state 273
 	else:  ELSE LBRACE statements RBRACE.    (15)
 
 	.  reduce 15 (src line 171)
 
 
-state 234
+state 274
 	elif:  elif ELIF expr LBRACE statements RBRACE.    (17)
 
 	.  reduce 17 (src line 176)
 
 
 78 terminals, 24 nonterminals
-106 grammar rules, 235/8000 states
+126 grammar rules, 275/8000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
 73 working sets used
-memory: parser 155/120000
+memory: parser 197/120000
 76 extra closures
-1940 shift entries, 1 exceptions
-106 goto entries
-88 entries saved by goto default
-Optimizer space used: output 1005/120000
-1005 table entries, 352 zero
-maximum spread: 76, maximum offset: 232
+2660 shift entries, 1 exceptions
+126 goto entries
+108 entries saved by goto default
+Optimizer space used: output 1023/120000
+1023 table entries, 330 zero
+maximum spread: 76, maximum offset: 272

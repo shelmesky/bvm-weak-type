@@ -192,30 +192,65 @@ switch
 
 statement 
     : variable ASSIGN expr { $$ = newBinary($1, $3, ASSIGN, yylex) }
-    | variable ADD_ASSIGN expr { $$ = newBinary($1, $3, ADD_ASSIGN, yylex); }
-    | variable SUB_ASSIGN expr { $$ = newBinary($1, $3, SUB_ASSIGN, yylex); }
-    | variable MUL_ASSIGN expr { $$ = newBinary($1, $3, MUL_ASSIGN, yylex); }
-    | variable DIV_ASSIGN expr { $$ = newBinary($1, $3, DIV_ASSIGN, yylex); }
-    | variable MOD_ASSIGN expr { $$ = newBinary($1, $3, MOD_ASSIGN, yylex); }
-    | variable LEFT_SHIFT_ASSIGN expr { $$ = newBinary($1, $3, LEFT_SHIFT_ASSIGN, yylex); }
-    | variable RIGHT_SHIFT_ASSIGN expr { $$ = newBinary($1, $3, RIGHT_SHIFT_ASSIGN, yylex); }
-    | variable BIT_AND_ASSIGN expr { $$ = newBinary($1, $3, BIT_AND_ASSIGN, yylex); }
-    | variable BIT_XOR_ASSIGN expr { $$ = newBinary($1, $3, BIT_XOR_ASSIGN, yylex); }
-    | variable BIT_OR_ASSIGN expr { $$ = newBinary($1, $3, BIT_OR_ASSIGN, yylex); }
     | index ASSIGN expr { $$ = newBinary($1, $3, ASSIGN, yylex) }
     | VAR IDENT ASSIGN expr { $$ = newBinary( newVarDecl([]string{$2}, yylex ), $4, ASSIGN, yylex) }
+
+    | variable ADD_ASSIGN expr { $$ = newBinary($1, $3, ADD_ASSIGN, yylex); }
+    | index ADD_ASSIGN expr { $$ = newBinary($1, $3, ADD_ASSIGN, yylex) }
+    | VAR IDENT ADD_ASSIGN expr { $$ = newBinary( newVarDecl([]string{$2}, yylex ), $4, ADD_ASSIGN, yylex) }
+
+    | variable SUB_ASSIGN expr { $$ = newBinary($1, $3, SUB_ASSIGN, yylex); }
+    | index SUB_ASSIGN expr { $$ = newBinary($1, $3, SUB_ASSIGN, yylex) }
+    | VAR IDENT SUB_ASSIGN expr { $$ = newBinary( newVarDecl([]string{$2}, yylex ), $4, SUB_ASSIGN, yylex) }
+
+    | variable MUL_ASSIGN expr { $$ = newBinary($1, $3, MUL_ASSIGN, yylex); }
+    | index MUL_ASSIGN expr { $$ = newBinary($1, $3, MUL_ASSIGN, yylex) }
+    | VAR IDENT MUL_ASSIGN expr { $$ = newBinary( newVarDecl([]string{$2}, yylex ), $4, MUL_ASSIGN, yylex) }
+
+
+    | variable DIV_ASSIGN expr { $$ = newBinary($1, $3, DIV_ASSIGN, yylex); }
+    | index DIV_ASSIGN expr { $$ = newBinary($1, $3, DIV_ASSIGN, yylex) }
+    | VAR IDENT DIV_ASSIGN expr { $$ = newBinary( newVarDecl([]string{$2}, yylex ), $4, DIV_ASSIGN, yylex) }
+
+    | variable MOD_ASSIGN expr { $$ = newBinary($1, $3, MOD_ASSIGN, yylex); }
+    | index MOD_ASSIGN expr { $$ = newBinary($1, $3, MOD_ASSIGN, yylex) }
+    | VAR IDENT MOD_ASSIGN expr { $$ = newBinary( newVarDecl([]string{$2}, yylex ), $4, MOD_ASSIGN, yylex) }
+
+    | variable LEFT_SHIFT_ASSIGN expr { $$ = newBinary($1, $3, LEFT_SHIFT_ASSIGN, yylex); }
+    | index LEFT_SHIFT_ASSIGN expr { $$ = newBinary($1, $3, LEFT_SHIFT_ASSIGN, yylex) }
+    | VAR IDENT LEFT_SHIFT_ASSIGN expr { $$ = newBinary( newVarDecl([]string{$2}, yylex ), $4, LEFT_SHIFT_ASSIGN, yylex) }
+
+    | variable RIGHT_SHIFT_ASSIGN expr { $$ = newBinary($1, $3, RIGHT_SHIFT_ASSIGN, yylex); }
+    | index RIGHT_SHIFT_ASSIGN expr { $$ = newBinary($1, $3, RIGHT_SHIFT_ASSIGN, yylex) }
+    | VAR IDENT RIGHT_SHIFT_ASSIGN expr { $$ = newBinary( newVarDecl([]string{$2}, yylex ), $4, RIGHT_SHIFT_ASSIGN, yylex) }
+
+    | variable BIT_AND_ASSIGN expr { $$ = newBinary($1, $3, BIT_AND_ASSIGN, yylex); }
+    | index BIT_AND_ASSIGN expr { $$ = newBinary($1, $3, BIT_AND_ASSIGN, yylex) }
+    | VAR IDENT BIT_AND_ASSIGN expr { $$ = newBinary( newVarDecl([]string{$2}, yylex ), $4, BIT_AND_ASSIGN, yylex) }
+
+    | variable BIT_XOR_ASSIGN expr { $$ = newBinary($1, $3, BIT_XOR_ASSIGN, yylex); }
+    | index BIT_XOR_ASSIGN expr { $$ = newBinary($1, $3, BIT_XOR_ASSIGN, yylex) }
+    | VAR IDENT BIT_XOR_ASSIGN expr { $$ = newBinary( newVarDecl([]string{$2}, yylex ), $4, BIT_XOR_ASSIGN, yylex) }
+
+    | variable BIT_OR_ASSIGN expr { $$ = newBinary($1, $3, BIT_OR_ASSIGN, yylex); }
+    | index BIT_OR_ASSIGN expr { $$ = newBinary($1, $3, BIT_OR_ASSIGN, yylex) }
+    | VAR IDENT BIT_OR_ASSIGN expr { $$ = newBinary( newVarDecl([]string{$2}, yylex ), $4, BIT_OR_ASSIGN, yylex) }
+
     | VAR ident_list { $$ = newVarDecl($2, yylex )}
+
     | IF expr LBRACE statements RBRACE elif else { $$ = newIf( $2, $4, $6, $7, yylex )}
     | BREAK { $$ = newBreak(yylex); }
     | CONTINUE { $$ = newContinue(yylex); }
     | RETURN { $$ = newReturn(nil, yylex); }
     | RETURN expr { $$ = newReturn($2, yylex); }
     | WHILE expr LBRACE statements RBRACE { $$ = newWhile( $2, $4, yylex )}
+
     | FUNC CALL par_declarations RPAREN LBRACE statements RBRACE {
            $$ = newFunc($2, $3, $6, yylex)
            }
     | CALL params RPAREN { $$ = newCallFunc($1, $2, yylex);}
     | CALLCONTRACT cntparams RPAREN { $$ = newCallContract($1, $2, yylex);}
+
     | FOR IDENT IN expr LBRACE statements RBRACE { $$ = newFor( $2, $4, $6, yylex )}
     | FOR IDENT COMMA IDENT IN expr LBRACE statements RBRACE { $$ = newForAll( $2, $4, $6, $8, yylex )}
     | FOR IDENT IN expr DOUBLEDOT expr LBRACE statements RBRACE { $$ = newForInt( $2, $4, $6, $8, yylex )}
@@ -240,13 +275,16 @@ expr
     | QSTRING { $$ = newValue($1, yylex);}
     | TRUE { $$ = newValue(true, yylex);}
     | FALSE { $$ = newValue(false, yylex);}
+
     | CALL params RPAREN { $$ = newCallFunc($1, $2, yylex);}
     | CALLCONTRACT cntparams RPAREN { $$ = newCallContract($1, $2, yylex);}
+
     | index { $$ = $1}
     | ENV { $$ = newEnv($1, yylex);}
     | IDENT { $$ = newGetVar($1, yylex);}
     | LBRACKET exprlist RBRACKET { $$ = $2;}	// [expr, expr ...]
     | LBRACE exprmaplist RBRACE { $$ = $2;}	// {"string": expr, "string": expr}
+
     | expr MUL expr { $$ = newBinary($1, $3, MUL, yylex); }
     | expr DIV expr { $$ = newBinary($1, $3, DIV, yylex);  }
     | expr ADD expr { $$ = newBinary($1, $3, ADD, yylex); }
