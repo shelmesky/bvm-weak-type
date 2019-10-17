@@ -433,21 +433,24 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 	case parser.TReturn:
 		expr := node.Value.(*parser.NReturn).Expr
 
-		// 如果return语句有表达式
+		// 如果return语句有表达式就编译表达式
 		if expr != nil {
 			if err = nodeToCode(cmpl, expr); err != nil {
 				return err
 			}
 		}
 
+		// 如果return关键字出现在函数中
 		if cmpl.InFunc {
 			if expr != nil {
-				// 如果return有表达式
+				// 如果函数中的return有表达式
 				cmpl.AppendCode(runtime.RETFUNC, 1)
 			} else {
+				// 如果函数中的return无表达式
 				cmpl.AppendCode(runtime.RETFUNC, 0)
 			}
 		} else {
+			// 如果return出现在函数外
 			cmpl.AppendCode(runtime.RETURN)
 		}
 
@@ -460,20 +463,25 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			return fmt.Errorf("Function cannot be defined inside another function")
 		}
 
+		// 函数信息定义
 		finfo := FuncInfo{
 			Name:      nFunc.Name,
 			ParamsNum: len(nFunc.Params),
 		}
 
+		// 检查函数是否已存在
 		if _, ok := cmpl.FuncTable[nFunc.Name]; ok {
 			return fmt.Errorf("Function %s hasn't been defined\n", nFunc.Name)
 		}
 
+		// 将函数参数当作变量处理
 		var varIdxList []BCode
 		if varIdxList, err = cmpl.InitVars(node, nFunc.Params); err != nil {
 			return err
 		}
 
+		// 生成JMP指令, 用于在VM运行时跳过函数定义
+		// 除非使用CALL指令否则函数代码不会运行
 		start := int64(len(cmpl.Code))
 		cmpl.AppendCode(runtime.JMP, 0)
 		finfo.Offset = start + 2
@@ -481,6 +489,8 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 		// 正在编译函数
 		cmpl.InFunc = true
 
+		// 函数存在参数
+		// 生成GETPARAMS指令处理函数被调用时实参到形参的复制
 		if len(nFunc.Params) > 0 {
 			var getParamIns []BCode
 			getParamIns = append(getParamIns, runtime.GETPARAMS)
@@ -504,7 +514,8 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 		// 离开函数编译
 		cmpl.InFunc = false
 
-		// 如果函数最后没有return关键字, 则在指令流中插入RETFUNC
+		// 如果函数最后没有return关键字
+		// 则在函数的指令流中强制插入RETFUNC指令
 		// -2是因为RETFUNC有一个参数
 		if cmpl.Code[len(cmpl.Code)-2] != runtime.RETFUNC {
 			cmpl.AppendCode(runtime.RETFUNC, 0)
