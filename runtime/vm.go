@@ -499,3 +499,22 @@ func getValueAB(vm *VM) (*Value, *Value, error) {
 
 	return valueA, valueB, err
 }
+
+func checkEmptyValue(valueA, valueB *Value) {
+	/*
+		如果变量声明时没有指定初始值, 则ValueA的值为nil.
+		应该根据valueB的类型, 给valueA赋予初始值.
+	*/
+	if valueB.Type == parser.VInt && valueA.Value == nil {
+		valueA.Value = int64(0)
+	}
+	if valueB.Type == parser.VStr && valueA.Value == nil {
+		valueA.Value = ""
+	}
+	if valueB.Type == parser.VFloat && valueA.Value == nil {
+		valueA.Value = float64(0)
+	}
+	if valueB.Type == parser.VBool && valueA.Value == nil {
+		valueA.Value = false
+	}
+}

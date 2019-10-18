@@ -47,16 +47,8 @@ func AddAssign(vm *VM) error {
 			return err
 		}
 
-		/*
-			如果变量声明时没有指定初始值, 则ValueA的值为nil.
-			应该根据valueB的类型, 给valueA赋予初始值.
-		*/
-		if valueB.Type == parser.VInt && valueA.Value == nil {
-			valueA.Value = int64(0)
-		}
-		if valueB.Type == parser.VStr && valueA.Value == nil {
-			valueA.Value = ""
-		}
+		// 检查是否为空值
+		checkEmptyValue(valueA, valueB)
 
 		result := valueA.Value.(int64) + valueB.Value.(int64)
 		value := Value{
