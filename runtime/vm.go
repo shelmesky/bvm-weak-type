@@ -441,21 +441,21 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 				} else {
 					return fmt.Errorf("map only support string key")
 				}
-
-				// 缩小栈
-				vm.ESP -= int(kvCount) * 2
-
-				// 将map作为临时栈变量的类型，然后保存到栈上
-				stackItem := &StackItem{
-					Type: STACK_TEMP,
-					Value: &Value{
-						Type:  parser.VMap,
-						Value: imap,
-					},
-				}
-				vm.ESP++
-				vm.Stack[vm.ESP] = stackItem
 			}
+
+			// 缩小栈
+			vm.ESP -= int(kvCount) * 2
+
+			// 将map作为临时栈变量的类型，然后保存到栈上
+			stackItem := &StackItem{
+				Type: STACK_TEMP,
+				Value: &Value{
+					Type:  parser.VMap,
+					Value: imap,
+				},
+			}
+			vm.ESP++
+			vm.Stack[vm.ESP] = stackItem
 
 			utils.DebugPrintf("VM> INITMAP %d\n", kvCount)
 

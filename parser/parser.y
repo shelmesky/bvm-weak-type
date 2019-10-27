@@ -262,7 +262,8 @@ exprlist
     ;   
 
 exprmaplist
-    : STRING COLON expr { $$ = newMap($1, $3, yylex); }
+    : { $$ = newMap("", nil, yylex) } /* empty map */
+    | STRING COLON expr { $$ = newMap($1, $3, yylex); }
     | exprmaplist COMMA STRING COLON NEWLINE expr { $$ = appendMap($1, $3, $6, yylex); }
     | exprmaplist COMMA STRING COLON expr { $$ = appendMap($1, $3, $5, yylex); }
     ;   

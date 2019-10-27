@@ -746,6 +746,12 @@ func appendArray(list *Node, par *Node, l yyLexer) *Node {
 }
 
 func newMap(key string, par *Node, l yyLexer) *Node {
+	if par == nil {
+		return setPos(&Node{
+			Type:  TMap,
+			Value: &NMap{List: []KeyVal{}},
+		}, l)
+	}
 	return setPos(&Node{
 		Type: TMap,
 		Value: &NMap{

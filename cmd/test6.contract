@@ -1,4 +1,4 @@
 contract mycnt {
     var mymap
-    mymap = {}
+    mymap = {"aaa": "bbb", "cccc": "ddd"}
 }
