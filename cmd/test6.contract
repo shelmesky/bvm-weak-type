@@ -1,0 +1,4 @@
+contract mycnt {
+    var mymap
+    mymap = {}
+}

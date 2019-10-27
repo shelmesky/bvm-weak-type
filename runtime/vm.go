@@ -412,6 +412,53 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 		case GTE:
 			utils.DebugPrintf("VM> GTE\n")
 
+		case INITMAP:
+			i++
+			kvCount := int64(code[i])
+			imap := make(map[string]*Value)
+			for k := int64(0); k < kvCount; k++ {
+				currentIdx := int64(vm.ESP) - 2*(kvCount-k) + 1
+
+				// 在栈上获取key和value元素
+				keyStackItem := vm.Stack[currentIdx]
+				key := GetValueFromStack(vm, keyStackItem)
+				valueStackItem := vm.Stack[currentIdx+1]
+				value := GetValueFromStack(vm, valueStackItem)
+
+				if err := CheckValue(key); err != nil {
+					return err
+				}
+				if err := CheckValue(value); err != nil {
+					return err
+				}
+
+				// 如果是key是字符串类型
+				// TODO: 增加int类型的key
+				if key.Type == parser.VStr {
+					keyStr := key.Value.(string)
+					// 保存key/value
+					imap[keyStr] = value
+				} else {
+					return fmt.Errorf("map only support string key")
+				}
+
+				// 缩小栈
+				vm.ESP -= int(kvCount) * 2
+
+				// 将map作为临时栈变量的类型，然后保存到栈上
+				stackItem := &StackItem{
+					Type: STACK_TEMP,
+					Value: &Value{
+						Type:  parser.VMap,
+						Value: imap,
+					},
+				}
+				vm.ESP++
+				vm.Stack[vm.ESP] = stackItem
+			}
+
+			utils.DebugPrintf("VM> INITMAP %d\n", kvCount)
+
 		default:
 			return fmt.Errorf("VM> unknown command %d\n", code[i])
 
@@ -443,6 +490,7 @@ func GetValueFromStack(vm *VM, stackItem *StackItem) *Value {
 	return value
 }
 
+// 检查value是否为空值
 func CheckValue(value *Value) error {
 	if value.Type == parser.VVoid {
 		return fmt.Errorf("Void type is not allowed\n")
@@ -475,6 +523,8 @@ func TypeLoader(value *Value) Value {
 	return retValue
 }
 
+// 获取栈顶的2个元素，并获取它们的值
+// 检查不是空值后返回
 func getValueAB(vm *VM) (*Value, *Value, error) {
 	var (
 		valueA *Value
@@ -500,11 +550,12 @@ func getValueAB(vm *VM) (*Value, *Value, error) {
 	return valueA, valueB, err
 }
 
+/*
+	如果变量声明时没有指定初始值, 则ValueA的值为nil.
+	应该根据valueB的类型, 给valueA赋予初始值.
+*/
 func checkEmptyValue(valueA, valueB *Value) {
-	/*
-		如果变量声明时没有指定初始值, 则ValueA的值为nil.
-		应该根据valueB的类型, 给valueA赋予初始值.
-	*/
+
 	if valueB.Type == parser.VInt && valueA.Value == nil {
 		valueA.Value = int64(0)
 	}

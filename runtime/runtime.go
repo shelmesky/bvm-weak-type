@@ -45,4 +45,5 @@ const (
 	GT                 // a > b
 	LTE                // a <= b
 	GTE                // a >= b
+	INITMAP            // init map type
 )

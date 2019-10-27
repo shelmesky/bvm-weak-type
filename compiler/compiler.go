@@ -153,6 +153,8 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 			utils.DebugPrintf("Compile>  LTE\n")
 		case runtime.GTE:
 			utils.DebugPrintf("Compile>  GTE\n")
+		case runtime.INITMAP:
+			utils.DebugPrintf("Compile>  INITMAP %d\n", codes[1])
 		}
 	}
 
@@ -730,6 +732,25 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 		cmpl.AppendCode(runtime.JMP, 0)
 		cmpl.Jumps[len(cmpl.Jumps)-1].Continues = append(cmpl.Jumps[len(cmpl.Jumps)-1].Continues,
 			len(cmpl.Code)-1)
+
+	case parser.TMap:
+		nMap := node.Value.(*parser.NMap)
+		// 循环处理map的字面值初始化
+		for _, par := range nMap.List {
+			cnst := Const{
+				Type:  parser.VStr,
+				Value: par.Key,
+			}
+
+			cmpl.ConstantsTable = append(cmpl.ConstantsTable, cnst)
+			cmpl.AppendCode(runtime.PUSH, BCode(len(cmpl.ConstantsTable)-1))
+
+			if err = nodeToCode(cmpl, par.Value); err != nil {
+				return err
+			}
+		}
+
+		cmpl.AppendCode(runtime.INITMAP, BCode(len(nMap.List)))
 	}
 
 	return nil
