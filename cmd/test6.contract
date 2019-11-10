@@ -1,12 +1,10 @@
 contract mycnt {
-    var mymap
-    mymap = {"aaa": "bbb"}
-    println(mymap["aaa"])
 
-    //var mymap1
-    //mymap1 = {}
+    func myfunc() {
+        var m = {"xxx": "yyy"}
+        return m
+    }
 
-    var bbb
-    bbb += "aaa"
-    println(bbb)
+    var ccc = myfunc()
+    println(ccc["xxx"])
 }

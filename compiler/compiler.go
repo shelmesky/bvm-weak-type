@@ -480,8 +480,10 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 
 		// 将函数参数当作变量处理
 		var varIdxList []BCode
-		if varIdxList, err = cmpl.InitVars(node, nFunc.Params); err != nil {
-			return err
+		if len(nFunc.Params) > 0 {
+			if varIdxList, err = cmpl.InitVars(node, nFunc.Params); err != nil {
+				return err
+			}
 		}
 
 		// 生成JMP指令, 用于在VM运行时跳过函数定义

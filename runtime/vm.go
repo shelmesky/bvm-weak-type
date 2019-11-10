@@ -476,15 +476,18 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 					// 获取map对象
 					imap := object.Value.(map[string]*Value)
 					// 根据key取value
-					value := imap[key.Value.(string)]
-
-					// 将value作为临时变量保存在栈顶
-					stackItem := &StackItem{
-						Type:  STACK_TEMP,
-						Value: value,
+					keyStr := key.Value.(string)
+					if value, ok := imap[keyStr]; ok {
+						// 将value作为临时变量保存在栈顶
+						stackItem := &StackItem{
+							Type:  STACK_TEMP,
+							Value: value,
+						}
+						vm.ESP++
+						vm.Stack[vm.ESP] = stackItem
+					} else {
+						return fmt.Errorf("key [%s] is not exists in map\n", keyStr)
 					}
-					vm.ESP++
-					vm.Stack[vm.ESP] = stackItem
 				}
 				// 如果是list类型
 			} else if object.Type == parser.VArr {
