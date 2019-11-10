@@ -449,12 +449,11 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 				Type:  parser.VMap,
 				Value: imap,
 			}
-			vm.Vars = append(vm.Vars, imapValue)
 
-			// 将map作为变量，保存在vm.Vars当中
+			// 将map作为临时变量，保存在栈中
 			stackItem := &StackItem{
-				Type:  VAR_IDX,
-				Value: int64(len(vm.Vars) - 1),
+				Type:  STACK_TEMP,
+				Value: imapValue,
 			}
 			vm.ESP++
 			vm.Stack[vm.ESP] = stackItem
