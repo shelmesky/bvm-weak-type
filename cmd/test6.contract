@@ -5,4 +5,8 @@ contract mycnt {
 
     //var mymap1
     //mymap1 = {}
+
+    var bbb
+    bbb += "aaa"
+    println(bbb)
 }

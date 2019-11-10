@@ -479,7 +479,7 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 					// 根据key取value
 					value := imap[key.Value.(string)]
 
-					// 将value保存在栈顶
+					// 将value作为临时变量保存在栈顶
 					stackItem := &StackItem{
 						Type:  STACK_TEMP,
 						Value: value,
@@ -535,33 +535,6 @@ func CheckValue(value *Value) error {
 	return nil
 }
 
-func TypeLoader(value *Value) Value {
-	var retValue Value
-
-	switch value.Type {
-	case parser.VInt:
-		retValue.Type = parser.VInt
-		retValue.Value = value.Value.(int64)
-	case parser.VStr:
-		retValue.Type = parser.VStr
-		retValue.Value = value.Value.(string)
-	case parser.VFloat:
-		retValue.Type = parser.VFloat
-		retValue.Value = value.Value.(float64)
-	case parser.VBool:
-		retValue.Type = parser.VBool
-		retValue.Value = value.Value.(bool)
-	case parser.VMap:
-		retValue.Type = parser.VMap
-		retValue.Value = value.Value
-	default:
-		retValue.Type = parser.VVoid
-		retValue.Value = nil
-	}
-
-	return retValue
-}
-
 // 获取栈顶的2个元素，并获取它们的值
 // 检查不是空值后返回
 func getValueAB(vm *VM) (*Value, *Value, error) {
@@ -596,15 +569,19 @@ func getValueAB(vm *VM) (*Value, *Value, error) {
 func checkEmptyValue(valueA, valueB *Value) {
 
 	if valueB.Type == parser.VInt && valueA.Value == nil {
+		valueA.Type = parser.VInt
 		valueA.Value = int64(0)
 	}
 	if valueB.Type == parser.VStr && valueA.Value == nil {
+		valueA.Type = parser.VStr
 		valueA.Value = ""
 	}
 	if valueB.Type == parser.VFloat && valueA.Value == nil {
+		valueA.Type = parser.VFloat
 		valueA.Value = float64(0)
 	}
 	if valueB.Type == parser.VBool && valueA.Value == nil {
+		valueA.Type = parser.VBool
 		valueA.Value = false
 	}
 }
