@@ -7,6 +7,20 @@ import (
 )
 
 func Assign(vm *VM) error {
+	left, right, err := getValueAB(vm)
+	if err != nil {
+		return err
+	}
+
+	left.Type = right.Type
+	left.Value = right.Value
+
+	utils.DebugPrintf("VM> ASSIGN\n")
+
+	return nil
+}
+
+func PointerAssign(vm *VM) error {
 	stackItemVar := vm.Stack[vm.ESP-1]
 	stackItemExprResult := vm.Stack[vm.ESP]
 

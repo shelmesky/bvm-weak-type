@@ -46,4 +46,5 @@ const (
 	LTE                // a <= b
 	GTE                // a >= b
 	INITMAP            // init map type
+	GETINDEX           // get index from map or list
 )

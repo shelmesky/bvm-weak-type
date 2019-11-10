@@ -5,7 +5,6 @@ import (
 	"bvm/utils"
 	"fmt"
 	"reflect"
-	"unsafe"
 )
 
 const (
@@ -130,14 +129,14 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			i++
 			vm.ESP++
 			// 根据SETVAR的操作数获取变量的索引
-			varIndex := code[i]
+			varIndex := int64(code[i])
 			utils.DebugPrintf("VM> SETVAR %d\n", code[i])
 			// 获取索引在vm.Vars中的指针
-			varPointer := int64(uintptr(unsafe.Pointer(&vm.Vars[varIndex])))
+			//varPointer := int64(uintptr(unsafe.Pointer(&vm.Vars[varIndex])))
 			// 保存指针到stack元素
 			stackItem := StackItem{
-				Type:  VAR_POINTER,
-				Value: varPointer,
+				Type:  VAR_IDX,
+				Value: varIndex,
 			}
 			vm.Stack[vm.ESP] = &stackItem
 
@@ -446,18 +445,55 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			// 缩小栈
 			vm.ESP -= int(kvCount) * 2
 
-			// 将map作为临时栈变量的类型，然后保存到栈上
+			imapValue := &Value{
+				Type:  parser.VMap,
+				Value: imap,
+			}
+			vm.Vars = append(vm.Vars, imapValue)
+
+			// 将map作为变量，保存在vm.Vars当中
 			stackItem := &StackItem{
-				Type: STACK_TEMP,
-				Value: &Value{
-					Type:  parser.VMap,
-					Value: imap,
-				},
+				Type:  VAR_IDX,
+				Value: int64(len(vm.Vars) - 1),
 			}
 			vm.ESP++
 			vm.Stack[vm.ESP] = stackItem
 
 			utils.DebugPrintf("VM> INITMAP %d\n", kvCount)
+
+		case GETINDEX:
+			utils.DebugPrintf("VM> GETINDEX\n")
+			object, key, err := getValueAB(vm)
+			if err != nil {
+				return err
+			}
+
+			vm.ESP -= 2
+
+			if object.Type == parser.VMap {
+				// 如果对象是map
+				keyType := key.Type
+				if keyType == parser.VStr {
+					// 获取map对象
+					imap := object.Value.(map[string]*Value)
+					// 根据key取value
+					value := imap[key.Value.(string)]
+
+					// 将value保存在栈顶
+					stackItem := &StackItem{
+						Type:  STACK_TEMP,
+						Value: value,
+					}
+					vm.ESP++
+					vm.Stack[vm.ESP] = stackItem
+				}
+				// 如果是list类型
+			} else if object.Type == parser.VArr {
+
+				// 如果既不是map也不是list则提示不支持下标操作
+			} else {
+				return fmt.Errorf("variable not support index operation\n")
+			}
 
 		default:
 			return fmt.Errorf("VM> unknown command %d\n", code[i])
@@ -515,6 +551,9 @@ func TypeLoader(value *Value) Value {
 	case parser.VBool:
 		retValue.Type = parser.VBool
 		retValue.Value = value.Value.(bool)
+	case parser.VMap:
+		retValue.Type = parser.VMap
+		retValue.Value = value.Value
 	default:
 		retValue.Type = parser.VVoid
 		retValue.Value = nil

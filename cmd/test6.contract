@@ -1,7 +1,8 @@
 contract mycnt {
     var mymap
-    mymap = {"aaa": "bbb", "cccc": "ddd"}
+    mymap = {"aaa": "bbb"}
+    println(mymap["aaa"])
 
-    var mymap1
-    mymap1 = {}
+    //var mymap1
+    //mymap1 = {}
 }

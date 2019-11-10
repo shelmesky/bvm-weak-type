@@ -155,6 +155,8 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 			utils.DebugPrintf("Compile>  GTE\n")
 		case runtime.INITMAP:
 			utils.DebugPrintf("Compile>  INITMAP %d\n", codes[1])
+		case runtime.GETINDEX:
+			utils.DebugPrintf("Compile>  GETINDEX\n")
 		}
 	}
 
@@ -751,6 +753,30 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 		}
 
 		cmpl.AppendCode(runtime.INITMAP, BCode(len(nMap.List)))
+
+	// 编译map或list的下标操作
+	case parser.TGetIndex:
+		nGetIndex := node.Value.(*parser.NGetIndex)
+
+		// 查找变量名并让变量入栈
+		name := nGetIndex.Name
+		if vInfo, ok := cmpl.VarTable[name]; !ok {
+			return fmt.Errorf("Variable %s hasn't been defined", name)
+		} else {
+			cmpl.AppendCode(runtime.GETVAR, BCode(vInfo.Index))
+		}
+
+		// 循环map或list结构，由于可能是二维索引，所以必需用循环
+		for _, item := range nGetIndex.Indexes {
+			// 编译索引中的表达式
+			if err = nodeToCode(cmpl, item); err != nil {
+				return err
+			}
+
+			// 生成GETINDEX指令
+			cmdInd := BCode(runtime.GETINDEX)
+			cmpl.AppendCode(cmdInd)
+		}
 	}
 
 	return nil
