@@ -28,6 +28,7 @@ const (
 	BIT_XOR_ASSIGN     // ^=
 	BIT_OR_ASSIGN      // |=
 	ASSIGN             // =
+	INDEX_ASSIGN       // = for map and list
 	LOOP               // loop start
 	JMP                // jump to offset
 	JZE                // jump if stack top is zero
@@ -47,4 +48,5 @@ const (
 	GTE                // a >= b
 	INITMAP            // init map type
 	GETINDEX           // get index from map or list
+	SETINDEX           // set index from map or list
 )

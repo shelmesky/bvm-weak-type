@@ -1,5 +1,4 @@
 contract mycnt {
-
     func myfunc() {
         var m = {"xxx": "yyy", "aaa": {"111": "222"}}
         return m
@@ -8,4 +7,14 @@ contract mycnt {
     var ccc = myfunc()
     println(ccc["xxx"])
     println(ccc["aaa"]["111"])
+
+    var map = {"aaa": "bbb", "xxx": {"111": "222"}}
+    map["aaa"] = "fuck"
+    println(map["aaa"])
+
+    map["xxx"]["111"] = "999"
+    println(map["xxx"]["111"])
+
+    map["xxx"] = {"666": "777"}
+    println(map["xxx"]["666"])
 }

@@ -107,6 +107,8 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 			utils.DebugPrintf("Compile> BIT_OR_ASSIGN\n")
 		case runtime.ASSIGN:
 			utils.DebugPrintf("Compile>  ASSIGN\n")
+		case runtime.INDEX_ASSIGN:
+			utils.DebugPrintf("Compile> INDEX_ASSIGN\n")
 
 		case runtime.LOOP:
 			utils.DebugPrintf("Compile>  LOOP\n")
@@ -157,6 +159,8 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 			utils.DebugPrintf("Compile>  INITMAP %d\n", codes[1])
 		case runtime.GETINDEX:
 			utils.DebugPrintf("Compile>  GETINDEX\n")
+		case runtime.SETINDEX:
+			utils.DebugPrintf("Compile>  SETINDEX\n")
 		}
 	}
 
@@ -240,6 +244,14 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 	// 赋值语句和二元表达式
 	case parser.TBinary:
 		nBinary := node.Value.(*parser.NBinary)
+
+		// 如果二元表达式的左边类型是 取下标 操作，且操作符是等于
+		// 就强行将左边的类型从TGetIndex该表TSetIndex
+		// 目的是当发现等于号左边是取下标操作，则不应该进入TGetIndex分支
+		// 应该进入TSetIndex分支编译
+		if nBinary.Left.Type == parser.TGetIndex && nBinary.Oper == parser.ASSIGN {
+			nBinary.Left.Type = parser.TSetIndex
+		}
 
 		// 递归处理左子树
 		if err = nodeToCode(cmpl, nBinary.Left); err != nil {
@@ -348,7 +360,13 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 		case parser.BIT_OR_ASSIGN:
 			cmpl.AppendCode(runtime.BIT_OR_ASSIGN)
 		case parser.ASSIGN:
-			cmpl.AppendCode(runtime.ASSIGN)
+			// 如果发现表达式左边类型是取下标操作
+			// 则生成INDEX_ASSIGN，区别与普通ASSIGN
+			if nBinary.Left.Type == parser.TSetIndex {
+				cmpl.AppendCode(runtime.INDEX_ASSIGN)
+			} else {
+				cmpl.AppendCode(runtime.ASSIGN)
+			}
 		case parser.AND:
 			cmpl.AppendCode(runtime.AND)
 		case parser.OR:
@@ -768,7 +786,7 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			cmpl.AppendCode(runtime.GETVAR, BCode(vInfo.Index))
 		}
 
-		// 循环map或list结构，由于可能是二维索引，所以必需用循环
+		// 循环map或list结构，为了多维索引语法，必需用循环
 		for _, item := range nGetIndex.Indexes {
 			// 编译索引中的表达式
 			if err = nodeToCode(cmpl, item); err != nil {
@@ -778,6 +796,34 @@ func nodeToCode(cmpl *CompileEnv, node *parser.Node) error {
 			// 生成GETINDEX指令
 			cmdInd := BCode(runtime.GETINDEX)
 			cmpl.AppendCode(cmdInd)
+		}
+
+	case parser.TSetIndex:
+		nGetIndex := node.Value.(*parser.NGetIndex)
+
+		// 查找变量名并让变量入栈
+		name := nGetIndex.Name
+		if vInfo, ok := cmpl.VarTable[name]; !ok {
+			return fmt.Errorf("Variable %s hasn't been defined", name)
+		} else {
+			cmpl.AppendCode(runtime.GETVAR, BCode(vInfo.Index))
+		}
+
+		for i, item := range nGetIndex.Indexes {
+			// 编译索引值
+			if err = nodeToCode(cmpl, item); err != nil {
+				return err
+			}
+
+			// 处理多维索引的情况:
+			// 如果是最后一个维度则生成SETINDEX指令
+			// 如果还没到最后一个就生成GETINDEX
+			// 用于将前一个维度取得的值放在栈上供下一个维度使用
+			if i == len(nGetIndex.Indexes)-1 {
+				cmpl.AppendCode(runtime.SETINDEX)
+			} else {
+				cmpl.AppendCode(runtime.GETINDEX)
+			}
 		}
 	}
 

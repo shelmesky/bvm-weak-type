@@ -216,6 +216,10 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 			if err := Assign(vm); err != nil {
 				return err
 			}
+		case INDEX_ASSIGN:
+			if err := IndexAssign(vm); err != nil {
+				return err
+			}
 
 		case LOOP:
 			utils.DebugPrintf("VM> LOOP\n")
@@ -497,6 +501,10 @@ func Run(byteCodeStream []uint16, FuncList []FuncInfo, constantTable []Value, va
 				return fmt.Errorf("variable not support index operation\n")
 			}
 
+		case SETINDEX:
+			// 检查下标是否超出范围
+			utils.DebugPrintf("VM> SETINDEX\n")
+
 		default:
 			return fmt.Errorf("VM> unknown command %d\n", code[i])
 
@@ -564,11 +572,45 @@ func getValueAB(vm *VM) (*Value, *Value, error) {
 	return valueA, valueB, err
 }
 
+// 获取栈顶的3个元素，并获取它们的值
+// 检查不是空值后返回
+func getValueABC(vm *VM) (*Value, *Value, *Value, error) {
+	var (
+		valueA *Value
+		valueB *Value
+		valueC *Value
+		err    error
+	)
+
+	// 从stack获取栈顶的2个元素
+	stackItemA := vm.Stack[vm.ESP-2]
+	stackItemB := vm.Stack[vm.ESP-1]
+	stackItemC := vm.Stack[vm.ESP]
+
+	valueA = GetValueFromStack(vm, stackItemA)
+	valueB = GetValueFromStack(vm, stackItemB)
+	valueC = GetValueFromStack(vm, stackItemC)
+
+	if err := CheckValue(valueA); err != nil {
+		return valueA, valueB, valueC, err
+	}
+
+	if err := CheckValue(valueB); err != nil {
+		return valueA, valueB, valueC, err
+	}
+
+	if err := CheckValue(valueC); err != nil {
+		return valueA, valueB, valueC, err
+	}
+
+	return valueA, valueB, valueC, err
+}
+
 /*
 	如果变量声明时没有指定初始值, 则ValueA的值为nil.
 	应该根据valueB的类型, 给valueA赋予初始值.
 */
-func checkEmptyValue(valueA, valueB *Value) {
+func checkEmptyValueAB(valueA, valueB *Value) {
 
 	if valueB.Type == parser.VInt && valueA.Value == nil {
 		valueA.Type = parser.VInt
