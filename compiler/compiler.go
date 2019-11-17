@@ -108,7 +108,7 @@ func (this *CompileEnv) AppendCode(codes ...BCode) {
 		case runtime.ASSIGN:
 			utils.DebugPrintf("Compile>  ASSIGN\n")
 		case runtime.INDEX_ASSIGN:
-			utils.DebugPrintf("Compile> INDEX_ASSIGN\n")
+			utils.DebugPrintf("Compile>  INDEX_ASSIGN\n")
 
 		case runtime.LOOP:
 			utils.DebugPrintf("Compile>  LOOP\n")
