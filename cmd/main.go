@@ -12,6 +12,10 @@ import (
 import "fmt"
 
 func main() {
+	if len(os.Args) < 2 {
+		fmt.Println("need script file.")
+		os.Exit(1)
+	}
 	inputFilename := os.Args[1]
 
 	if len(inputFilename) == 0 {
